@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>Pushups Analytics</h1>
+    <p>As of: <strong><%= as_of %></strong></p>
+    <p><a href="/log">Back to log</a> | <a href="/analytics.json">JSON</a></p>
+
+    <h2>Scorecard</h2>
+    <p>Pace: <strong><%= goal.on_pace_today ? "On Pace" : "Behind Pace" %></strong></p>
+    <p>Ahead/Behind: <strong><%= goal.ahead_behind %></strong></p>
+    <p>Required per day: <strong><%= goal.required_per_day_remaining %></strong></p>
+    <p>Projected by target date: <strong><%= goal.projected_total_by_target_30d_pace %></strong></p>
+    <p>7d avg: <strong><%= consistency.avg_7d %></strong> | 30d avg: <strong><%= consistency.avg_30d %></strong></p>
+    <p>Active days (30d): <strong><%= consistency.active_days_30d %></strong></p>
+    <p>Weekly jump %: <strong><%= risk.weekly_jump_pct === null ? "n/a" : risk.weekly_jump_pct %></strong></p>
+    <p>Risk: <strong><%= risk.high_ramp_risk ? "High ramp risk" : "Controlled" %></strong></p>
+
+    <h2>How To Learn From This</h2>
+    <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
+    <p><strong>Consistency:</strong> <%= interpretation.consistency.status %> - <%= interpretation.consistency.advice %></p>
+    <p><strong>Risk:</strong> <%= interpretation.risk.status %> - <%= interpretation.risk.advice %></p>
+    <p><strong>Coach note (next 7 days):</strong> <%= coach_note %></p>
+
+    <h2>Pro/Dev High-Performer Rules</h2>
+    <ol>
+      <% for (const item of pro_dev) { %>
+        <li>
+          <strong><%= item.name %></strong><br/>
+          Why: <%= item.why %><br/>
+          Action: <%= item.action %>
+        </li>
+      <% } %>
+    </ol>
+  </body>
+</html>
