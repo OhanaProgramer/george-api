@@ -1,35 +1,84 @@
 <!doctype html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pushups Analytics</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
   <body>
-    <h1>Pushups Analytics</h1>
-    <p>As of: <strong><%= as_of %></strong></p>
-    <p><a href="/log">Back to log</a> | <a href="/analytics.json">JSON</a></p>
+    <main class="shell">
+      <div class="topbar">
+        <a href="/log">Back to log</a>
+        <span class="subtle">As of <strong><%= as_of %></strong></span>
+      </div>
 
-    <h2>Scorecard</h2>
-    <p>Pace: <strong><%= goal.on_pace_today ? "On Pace" : "Behind Pace" %></strong></p>
-    <p>Ahead/Behind: <strong><%= goal.ahead_behind %></strong></p>
-    <p>Required per day: <strong><%= goal.required_per_day_remaining %></strong></p>
-    <p>Projected by target date: <strong><%= goal.projected_total_by_target_30d_pace %></strong></p>
-    <p>7d avg: <strong><%= consistency.avg_7d %></strong> | 30d avg: <strong><%= consistency.avg_30d %></strong></p>
-    <p>Active days (30d): <strong><%= consistency.active_days_30d %></strong></p>
-    <p>Weekly jump %: <strong><%= risk.weekly_jump_pct === null ? "n/a" : risk.weekly_jump_pct %></strong></p>
-    <p>Risk: <strong><%= risk.high_ramp_risk ? "High ramp risk" : "Controlled" %></strong></p>
+      <section class="panel">
+        <h1>Pushups Analytics</h1>
+        <div class="links">
+          <a class="btn-link" href="/analytics.json">Analytics JSON</a>
+          <a class="btn-link" href="/stats">Stats JSON</a>
+        </div>
 
-    <h2>How To Learn From This</h2>
-    <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
-    <p><strong>Consistency:</strong> <%= interpretation.consistency.status %> - <%= interpretation.consistency.advice %></p>
-    <p><strong>Risk:</strong> <%= interpretation.risk.status %> - <%= interpretation.risk.advice %></p>
-    <p><strong>Coach note (next 7 days):</strong> <%= coach_note %></p>
+        <h2>Scorecard</h2>
+        <div class="grid">
+          <article class="card">
+            <div class="k">Pace</div>
+            <div class="v"><%= goal.on_pace_today ? "On Pace" : "Behind" %></div>
+            <span class="chip <%= goal.on_pace_today ? 'good' : 'warn' %>"><%= goal.on_pace_today ? "On Track" : "Catch Up" %></span>
+          </article>
+          <article class="card">
+            <div class="k">Ahead / Behind</div>
+            <div class="v"><%= goal.ahead_behind %></div>
+          </article>
+          <article class="card">
+            <div class="k">Required / Day</div>
+            <div class="v"><%= goal.required_per_day_remaining %></div>
+          </article>
+          <article class="card">
+            <div class="k">Projected By Target</div>
+            <div class="v"><%= goal.projected_total_by_target_30d_pace %></div>
+          </article>
+          <article class="card">
+            <div class="k">7d vs 30d</div>
+            <div class="v"><%= consistency.avg_7d %> / <%= consistency.avg_30d %></div>
+          </article>
+          <article class="card">
+            <div class="k">Active Days (30d)</div>
+            <div class="v"><%= consistency.active_days_30d %></div>
+          </article>
+          <article class="card">
+            <div class="k">Weekly Jump %</div>
+            <div class="v"><%= risk.weekly_jump_pct === null ? "n/a" : risk.weekly_jump_pct %></div>
+          </article>
+          <article class="card">
+            <div class="k">Risk</div>
+            <div class="v"><%= risk.high_ramp_risk ? "High" : "Controlled" %></div>
+            <span class="chip <%= risk.high_ramp_risk ? 'warn' : 'good' %>"><%= risk.high_ramp_risk ? "Watch Load" : "Stable" %></span>
+          </article>
+        </div>
 
-    <h2>Pro/Dev High-Performer Rules</h2>
-    <ol>
-      <% for (const item of pro_dev) { %>
-        <li>
-          <strong><%= item.name %></strong><br/>
-          Why: <%= item.why %><br/>
-          Action: <%= item.action %>
-        </li>
-      <% } %>
-    </ol>
+        <h2>How To Learn From This</h2>
+        <article class="card">
+          <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
+          <p><strong>Consistency:</strong> <%= interpretation.consistency.status %> - <%= interpretation.consistency.advice %></p>
+          <p><strong>Risk:</strong> <%= interpretation.risk.status %> - <%= interpretation.risk.advice %></p>
+          <p class="coach">Coach note (next 7 days): <%= coach_note %></p>
+        </article>
+
+        <h2>Pro/Dev High-Performer Rules</h2>
+        <article class="card">
+          <ol class="rules">
+            <% for (const item of pro_dev) { %>
+              <li>
+                <strong><%= item.name %></strong><br/>
+                Why: <%= item.why %><br/>
+                Action: <%= item.action %>
+              </li>
+            <% } %>
+          </ol>
+        </article>
+      </section>
+    </main>
   </body>
 </html>
