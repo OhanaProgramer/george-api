@@ -98,7 +98,23 @@ app.post("/log", (req, res) => {
     );
   }
 
-  appendLogEntry(n, "server");
+  try {
+    appendLogEntry(n, "server");
+  } catch (err) {
+    console.error("Failed to append log entry:", err);
+    const permissionError = err && (err.code === "EACCES" || err.code === "EPERM");
+    return renderLog(
+      res,
+      {
+        message: "",
+        error: permissionError
+          ? "Storage permission issue on server. Please contact admin."
+          : "Unable to save your entry right now. Please try again.",
+        last: rawCount || "",
+      },
+      500
+    );
+  }
 
   return renderLog(res, {
     message: `Logged ${n}.`,

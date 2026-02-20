@@ -5,12 +5,22 @@ const DATA_FILE = path.join(__dirname, "..", "data", "pushups.json");
 const GOAL_TOTAL_2026 = 30000;
 const GOAL_START_2026 = "2026-01-01";
 const GOAL_DEADLINE_2026 = "2026-12-22";
+const APP_TIMEZONE = process.env.APP_TIMEZONE || process.env.TZ || "Pacific/Honolulu";
 
 function dateKeyLocal(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const parts = Object.fromEntries(
+    fmt
+      .formatToParts(date)
+      .filter((x) => x.type !== "literal")
+      .map((x) => [x.type, x.value])
+  );
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 function createEmptyData() {
