@@ -1,6 +1,6 @@
 const {
   readEvents,
-  writeEvents,
+  appendEvent,
 } = require("../src/domains/pushups/pushups.store");
 
 const GOAL_TOTAL_2026 = 30000;
@@ -24,92 +24,53 @@ function dateKeyLocal(date = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
-function createEmptyData() {
-  return {
-    meta: {
-      schemaVersion: 2,
-      created: dateKeyLocal(),
-      tool: "george-api",
-      storage: "local.file",
-    },
-    training_rules: {
-      exclude_reps_values: [1],
-      exclude_flags: ["exclude_from_training"],
-    },
-    summary: {
-      lastUpdated: dateKeyLocal(),
-      today: { date: dateKeyLocal(), count: 0 },
-      lifetime: 0,
-    },
-    daily: {},
-    log: [],
-    daily_counts: {},
-    daily_training: {},
-  };
+function eventsToLog(events) {
+  return events
+    .map((evt) => {
+      const ts = String(evt && evt.ts ? evt.ts : new Date(0).toISOString());
+      const dt = new Date(ts);
+      const date = Number.isNaN(dt.getTime()) ? dateKeyLocal() : dateKeyLocal(dt);
+      return {
+        ts,
+        date,
+        reps: Number(evt && evt.reps ? evt.reps : 0) || 0,
+        source: evt && evt.source ? String(evt.source) : "unknown",
+        note: evt && evt.note ? String(evt.note) : "",
+      };
+    })
+    .sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 }
 
-async function loadData() {
-  const data = await readEvents();
-  if (!data || typeof data !== "object" || Array.isArray(data) || Object.keys(data).length === 0) {
-    const fresh = createEmptyData();
-    await writeEvents(fresh);
-    return fresh;
-  }
-  return data;
+function getLifetimeCount(log) {
+  if (!Array.isArray(log)) return 0;
+  return log.reduce((sum, e) => sum + (Number(e.reps) || 0), 0);
 }
 
-async function saveData(data) {
-  await writeEvents(data);
-}
-
-function getLifetimeCount(data) {
-  if (!Array.isArray(data.log)) return 0;
-  return data.log.reduce((sum, e) => sum + (Number(e.reps) || 0), 0);
-}
-
-function getTodayCountFromLog(data, todayKey) {
-  if (!Array.isArray(data.log)) return 0;
-  return data.log.reduce((sum, e) => {
+function getTodayCountFromLog(log, todayKey) {
+  if (!Array.isArray(log)) return 0;
+  return log.reduce((sum, e) => {
     return e.date === todayKey ? sum + (Number(e.reps) || 0) : sum;
   }, 0);
 }
 
 async function appendLogEntry(reps, source = "server") {
-  const data = await loadData();
-  const now = new Date();
-  const today = dateKeyLocal(now);
-
-  if (!Array.isArray(data.log)) data.log = [];
-  if (!data.daily || typeof data.daily !== "object") data.daily = {};
-  if (!data.daily_counts || typeof data.daily_counts !== "object") data.daily_counts = {};
-  if (!data.daily_training || typeof data.daily_training !== "object") data.daily_training = {};
-  if (!data.summary || typeof data.summary !== "object") data.summary = {};
-
-  data.log.push({
-    ts: now.toISOString(),
-    date: today,
+  const now = new Date().toISOString();
+  return appendEvent({
+    ts: now,
     reps,
     source,
+    note: "",
+    tags: [],
   });
-
-  data.daily[today] = Number(data.daily[today] || 0) + reps;
-  data.daily_counts[today] = Number(data.daily_counts[today] || 0) + reps;
-  data.daily_training[today] = Number(data.daily_training[today] || 0) + reps;
-
-  data.summary.lastUpdated = today;
-  data.summary.today = { date: today, count: Number(data.daily[today] || 0) };
-  data.summary.lifetime = getLifetimeCount(data);
-
-  await saveData(data);
-  return data;
 }
 
 async function getDashboardCounts() {
-  const data = await loadData();
+  const events = await readEvents();
+  const log = eventsToLog(events);
   const today = dateKeyLocal();
   return {
-    todayCount: getTodayCountFromLog(data, today),
-    lifetimeCount: getLifetimeCount(data),
+    todayCount: getTodayCountFromLog(log, today),
+    lifetimeCount: getLifetimeCount(log),
   };
 }
 
@@ -176,9 +137,10 @@ function activeDays(daily, endKey, days) {
 }
 
 async function getStats() {
-  const data = await loadData();
+  const events = await readEvents();
+  const log = eventsToLog(events);
   const todayKey = dateKeyLocal();
-  const daily = buildDailyFromLog(data);
+  const daily = buildDailyFromLog({ log });
 
   const goalStart = parseDateKey(GOAL_START_2026);
   const goalEnd = parseDateKey(GOAL_DEADLINE_2026);
@@ -230,7 +192,7 @@ async function getStats() {
       high_ramp_risk: weeklyJumpPct !== null && weeklyJumpPct > 30,
     },
     totals: {
-      lifetime_all_years: getLifetimeCount(data),
+      lifetime_all_years: getLifetimeCount(log),
     },
   };
 }

@@ -1,8 +1,14 @@
 const fs = require("fs/promises");
 const path = require("path");
+const {
+  appendNDJSON,
+  readNDJSON,
+} = require("../../core/eventStore");
 
 const basePath = path.join(process.cwd(), "data", "pushups");
 const eventsPath = path.join(basePath, "events.json");
+const eventsNdjsonPath = path.join(basePath, "events.ndjson");
+const legacyPath = path.join(process.cwd(), "data", "pushups.json");
 const derivedPath = path.join(basePath, "derived.json");
 const publishPath = path.join(basePath, "publish.json");
 
@@ -24,6 +30,40 @@ async function readJson(filePath, fallback) {
   }
 }
 
+function normalizeEvent(entry, n = 0) {
+  const ts = String(entry && entry.ts ? entry.ts : new Date().toISOString());
+  const reps = Number(entry && entry.reps);
+  return {
+    schema: 1,
+    id: entry && entry.id ? String(entry.id) : `evt_${ts.replace(/[^0-9A-Za-z]/g, "")}_${n}`,
+    ts,
+    tz: "America/New_York",
+    type: "pushups.set",
+    reps: Number.isFinite(reps) ? Math.trunc(reps) : 0,
+    source: entry && entry.source ? String(entry.source) : "unknown",
+    tags: Array.isArray(entry && entry.tags) ? entry.tags : [],
+    note: entry && entry.note ? String(entry.note) : "",
+  };
+}
+
+function sortByTsAsc(events) {
+  return [...events].sort((a, b) => {
+    const ta = new Date(a.ts).getTime();
+    const tb = new Date(b.ts).getTime();
+    return ta - tb;
+  });
+}
+
+async function statSize(filePath) {
+  try {
+    const st = await fs.stat(filePath);
+    return st.size;
+  } catch (err) {
+    if (err.code === "ENOENT") return 0;
+    throw err;
+  }
+}
+
 async function writeJson(filePath, data) {
   try {
     await ensureDir();
@@ -34,11 +74,32 @@ async function writeJson(filePath, data) {
 }
 
 async function readEvents() {
-  return readJson(eventsPath, {});
+  await ensureDir();
+
+  const ndjsonSize = await statSize(eventsNdjsonPath);
+  if (ndjsonSize > 0) {
+    const ndjsonEvents = await readNDJSON(eventsNdjsonPath);
+    return sortByTsAsc(ndjsonEvents.map((evt, i) => normalizeEvent(evt, i)));
+  }
+
+  const legacySize = await statSize(legacyPath);
+  if (legacySize > 0) {
+    const legacy = await readJson(legacyPath, {});
+    const log = Array.isArray(legacy && legacy.log) ? legacy.log : [];
+    return sortByTsAsc(log.map((evt, i) => normalizeEvent(evt, i)));
+  }
+
+  return [];
 }
 
 async function writeEvents(data) {
   return writeJson(eventsPath, data);
+}
+
+async function appendEvent(evt) {
+  const normalized = normalizeEvent(evt, Date.now());
+  await appendNDJSON(eventsNdjsonPath, normalized);
+  return normalized;
 }
 
 async function readDerived() {
@@ -60,6 +121,7 @@ async function writePublish(data) {
 module.exports = {
   readEvents,
   writeEvents,
+  appendEvent,
   readDerived,
   writeDerived,
   readPublish,
