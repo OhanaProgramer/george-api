@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pushups Log</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <strong>Worlds Abound Private</strong>
+      </div>
+
+      <section class="panel">
+        <h1>Pushups Log</h1>
+        <div class="links">
+          <a class="btn-link" href="/pushups/analytics">Analytics</a>
+          <a class="btn-link" href="/pushups/stats.json">Stats JSON</a>
+        </div>
+
+        <div class="stats-row">
+          <article class="stat">
+            <div class="k">Today</div>
+            <div class="v"><%= todayCount || 0 %></div>
+          </article>
+          <article class="stat">
+            <div class="k">Lifetime</div>
+            <div class="v"><%= lifetimeCount || 0 %></div>
+          </article>
+        </div>
+
+        <% if (message) { %>
+          <p class="msg"><%= message %></p>
+        <% } %>
+
+        <% if (error) { %>
+          <p class="err"><%= error %></p>
+        <% } %>
+
+        <form method="post" action="/pushups/log">
+          <div class="form-grid">
+            <div>
+              <label for="count">How many pushups?</label>
+              <input id="count" name="count" type="number" min="1" max="300" step="1" required autofocus value="<%= last || '' %>" />
+            </div>
+            <button type="submit">Log Session</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

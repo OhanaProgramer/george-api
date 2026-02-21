@@ -1,139 +1,95 @@
+require("dotenv").config();
 const express = require("express");
-const cookieParser = require("cookie-parser");
 const path = require("path");
-const { appendLogEntry, getAnalytics, getDashboardCounts, getStats } = require("./models/pushupsModel");
+const pushupsRouter = require("./src/domains/pushups");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-const COOKIE_NAME = process.env.SITE_COOKIE_NAME || "pushups_auth";
-const TOKENS = new Set(
-  (process.env.SITE_TOKENS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
-function hasValidToken(token) {
-  return TOKENS.has(String(token || "").trim());
+// ------------------------------
+// 📘 Teach-mode: Header-based API key auth (Option A)
+// - Clients send: Authorization: Bearer <key>
+// - We support two scopes via env:
+//   SITE_TOKENS_READONLY (GET/HEAD/OPTIONS)
+//   SITE_TOKENS_ADMIN   (writes: POST/PUT/PATCH/DELETE)
+// - We intentionally do NOT accept query-string tokens or cookies.
+//   Why: they leak into logs/history and create accidental exposure.
+// ------------------------------
+
+function parseBearer(req) {
+  const h = req.headers.authorization || "";
+  const m = h.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1].trim() : "";
 }
 
-function renderLog(res, { message = "", error = "", last = "" } = {}, statusCode = 200) {
-  const { todayCount, lifetimeCount } = getDashboardCounts();
-  return res.status(statusCode).render("log", { message, error, last, todayCount, lifetimeCount });
+function setFromEnv(name) {
+  const raw = process.env[name] || "";
+  return new Set(
+    raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+}
+
+const READONLY = setFromEnv("SITE_TOKENS_READONLY");
+const ADMIN = setFromEnv("SITE_TOKENS_ADMIN");
+
+function requireApiKey(req, res, next) {
+  // Public endpoints
+  if (req.path === "/health") return next();
+
+  const key = parseBearer(req);
+
+  if (READONLY.size === 0 || ADMIN.size === 0) {
+    return res.status(500).send("SITE_TOKENS_READONLY / SITE_TOKENS_ADMIN not set");
+  }
+
+  // 📘 Teach-mode: Simple scope rule for v0.1
+  // - Reads: GET/HEAD/OPTIONS must have a READONLY key
+  // - Writes: POST/PUT/PATCH/DELETE must have an ADMIN key
+  const method = (req.method || "GET").toUpperCase();
+  const isRead = method === "GET" || method === "HEAD" || method === "OPTIONS";
+
+  const ok = isRead ? READONLY.has(key) : ADMIN.has(key);
+  if (!ok) return res.status(401).send("Unauthorized");
+
+  req.auth = { scope: isRead ? "readonly" : "admin" };
+  return next();
 }
 
 app.get("/health", (req, res) => {
   res.status(200).json({ ok: true, service: "george-api-local", ts: new Date().toISOString() });
 });
 
-app.get("/verify", (req, res) => {
-  if (TOKENS.size === 0) {
-    return res.status(500).send("SITE_TOKENS not set");
-  }
-
-  const token = req.query.token;
-  if (!hasValidToken(token)) {
-    return res.status(401).send("Invalid token");
-  }
-
-  res.cookie(COOKIE_NAME, String(token).trim(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
-
-  return res.redirect(302, "/log");
-});
-
-function requireSiteToken(req, res, next) {
-  if (req.path === "/health" || req.path === "/verify") {
-    return next();
-  }
-
-  if (TOKENS.size === 0) {
-    return res.status(500).send("SITE_TOKENS not set");
-  }
-
-  const token = req.cookies?.[COOKIE_NAME] || req.get("x-site-token") || req.query.token;
-  if (!hasValidToken(token)) {
-    return res.status(401).send("Unauthorized");
-  }
-
-  return next();
-}
-
-app.use(requireSiteToken);
+app.use(requireApiKey);
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.redirect(302, "/log");
+  res.redirect(302, "/pushups/log");
 });
 
 app.get("/log", (req, res) => {
-  renderLog(res, {
-    message: "",
-    error: "",
-    last: "",
-  });
-});
-
-app.post("/log", (req, res) => {
-  const rawCount = req.body.count;
-  const n = Number(rawCount);
-
-  if (!Number.isInteger(n) || n < 1 || n > 300) {
-    return renderLog(
-      res,
-      {
-      message: "",
-      error: "Enter a whole number between 1 and 300.",
-      last: rawCount || "",
-      },
-      400
-    );
-  }
-
-  try {
-    appendLogEntry(n, "server");
-  } catch (err) {
-    console.error("Failed to append log entry:", err);
-    const permissionError = err && (err.code === "EACCES" || err.code === "EPERM");
-    return renderLog(
-      res,
-      {
-        message: "",
-        error: permissionError
-          ? "Storage permission issue on server. Please contact admin."
-          : "Unable to save your entry right now. Please try again.",
-        last: rawCount || "",
-      },
-      500
-    );
-  }
-
-  return renderLog(res, {
-    message: `Logged ${n}.`,
-    error: "",
-    last: "",
-  });
-});
-
-app.get("/stats", (req, res) => {
-  return res.status(200).json(getStats());
+  res.redirect(302, "/pushups/log");
 });
 
 app.get("/analytics", (req, res) => {
-  return res.status(200).render("analytics", getAnalytics());
+  res.redirect(302, "/pushups/analytics");
+});
+
+app.get("/stats", (req, res) => {
+  res.redirect(302, "/pushups/stats.json");
 });
 
 app.get("/analytics.json", (req, res) => {
-  return res.status(200).json(getAnalytics());
+  res.redirect(302, "/pushups/analytics.json");
 });
+
+app.use("/", pushupsRouter);
 
 app.listen(PORT, () => {
   console.log(`listening on http://127.0.0.1:${PORT}`);

@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "start:dev:auth": "SITE_TOKENS=TESTTOKEN node server.js",
+    "start:dev:auth": "SITE_TOKENS_READONLY=cat_site SITE_TOKENS_ADMIN=cat_admin TRUST_PROXY=1 node server.js",
+    "smoke": "bash scripts/smoke_test.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,8 +13,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.3.1",
     "ejs": "^4.0.1",
     "express": "^5.2.1"
+  },
+  "overrides": {
+    "minimatch": "^10.2.1"
   }
 }
