@@ -7,6 +7,7 @@
     "start:dev:auth": "SITE_TOKENS_READONLY=cat_site SITE_TOKENS_ADMIN=cat_admin TRUST_PROXY=1 node server.js",
     "migrate:pushups": "node scripts/migrate_pushups_legacy.js",
     "export:pushups:ndjson": "node scripts/export_pushups_ndjson.js",
+    "rebuild:pushups": "node scripts/rebuild_pushups.js",
     "smoke": "bash scripts/smoke_test.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

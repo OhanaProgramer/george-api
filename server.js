@@ -55,7 +55,9 @@ function requireApiKey(req, res, next) {
   const method = (req.method || "GET").toUpperCase();
   const isRead = method === "GET" || method === "HEAD" || method === "OPTIONS";
 
-  const ok = isRead ? READONLY.has(key) : ADMIN.has(key);
+  // 📘 Teach-mode: ADMIN should be a superset.
+  // If you have an admin key, you can always read.
+  const ok = isRead ? (READONLY.has(key) || ADMIN.has(key)) : ADMIN.has(key);
   if (!ok) return res.status(401).send("Unauthorized");
 
   req.auth = { scope: isRead ? "readonly" : "admin" };

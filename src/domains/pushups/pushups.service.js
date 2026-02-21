@@ -3,6 +3,7 @@ const {
   readDerived,
   readPublish,
 } = require("./pushups.store");
+const { rebuildPushups } = require("./pushups.rebuild");
 
 async function getLogData(overrides = {}) {
   const { todayCount, lifetimeCount } = await getDashboardCounts();
@@ -21,14 +22,25 @@ async function getAnalyticsData() {
 }
 
 async function addLogEntry(reps, source = "server") {
-  return appendLogEntry(reps, source);
+  await appendLogEntry(reps, source);
+  return rebuildPushups();
 }
 
 async function getStatsJson() {
+  const derived = await readDerived();
+  if (derived && typeof derived === "object" && Object.keys(derived).length > 0) {
+    return derived;
+  }
+  await rebuildPushups();
   return readDerived();
 }
 
 async function getAnalyticsJson() {
+  const publish = await readPublish();
+  if (publish && typeof publish === "object" && Object.keys(publish).length > 0) {
+    return publish;
+  }
+  await rebuildPushups();
   return readPublish();
 }
 
@@ -38,4 +50,5 @@ module.exports = {
   addLogEntry,
   getStatsJson,
   getAnalyticsJson,
+  rebuildPushups,
 };

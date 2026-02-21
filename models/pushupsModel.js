@@ -136,10 +136,11 @@ function activeDays(daily, endKey, days) {
   return count;
 }
 
-async function getStats() {
+async function getStats({ nowTs } = {}) {
   const events = await readEvents();
   const log = eventsToLog(events);
-  const todayKey = dateKeyLocal();
+  const todayRef = nowTs ? new Date(nowTs) : new Date();
+  const todayKey = dateKeyLocal(todayRef);
   const daily = buildDailyFromLog({ log });
 
   const goalStart = parseDateKey(GOAL_START_2026);
@@ -197,8 +198,8 @@ async function getStats() {
   };
 }
 
-async function getAnalytics() {
-  const stats = await getStats();
+async function getAnalytics({ nowTs } = {}) {
+  const stats = await getStats({ nowTs });
   const paceDelta = stats.goal.ahead_behind;
   const onPace = stats.goal.on_pace_today;
   const weeklyJump = stats.risk.weekly_jump_pct;

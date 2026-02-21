@@ -77,19 +77,13 @@ async function readEvents() {
   await ensureDir();
 
   const ndjsonSize = await statSize(eventsNdjsonPath);
-  if (ndjsonSize > 0) {
-    const ndjsonEvents = await readNDJSON(eventsNdjsonPath);
-    return sortByTsAsc(ndjsonEvents.map((evt, i) => normalizeEvent(evt, i)));
+  if (ndjsonSize <= 0) {
+    console.warn("pushups.readEvents: events.ndjson missing or empty; returning []");
+    return [];
   }
 
-  const legacySize = await statSize(legacyPath);
-  if (legacySize > 0) {
-    const legacy = await readJson(legacyPath, {});
-    const log = Array.isArray(legacy && legacy.log) ? legacy.log : [];
-    return sortByTsAsc(log.map((evt, i) => normalizeEvent(evt, i)));
-  }
-
-  return [];
+  const ndjsonEvents = await readNDJSON(eventsNdjsonPath);
+  return sortByTsAsc(ndjsonEvents.map((evt, i) => normalizeEvent(evt, i)));
 }
 
 async function writeEvents(data) {
@@ -100,6 +94,14 @@ async function appendEvent(evt) {
   const normalized = normalizeEvent(evt, Date.now());
   await appendNDJSON(eventsNdjsonPath, normalized);
   return normalized;
+}
+
+async function readLegacyEventsForMigrationOnly() {
+  const legacySize = await statSize(legacyPath);
+  if (legacySize <= 0) return [];
+  const legacy = await readJson(legacyPath, {});
+  const log = Array.isArray(legacy && legacy.log) ? legacy.log : [];
+  return sortByTsAsc(log.map((evt, i) => normalizeEvent(evt, i)));
 }
 
 async function readDerived() {
@@ -122,6 +124,7 @@ module.exports = {
   readEvents,
   writeEvents,
   appendEvent,
+  readLegacyEventsForMigrationOnly,
   readDerived,
   writeDerived,
   readPublish,
