@@ -1,15 +1,11 @@
-const {
-  appendLogEntry,
-  getAnalytics,
-  getDashboardCounts,
-} = require("../../../models/pushupsModel");
+const { appendLogEntry, getAnalytics, getDashboardCounts } = require("../../../models/pushupsModel");
 const {
   readDerived,
   readPublish,
 } = require("./pushups.store");
 
-function getLogData(overrides = {}) {
-  const { todayCount, lifetimeCount } = getDashboardCounts();
+async function getLogData(overrides = {}) {
+  const { todayCount, lifetimeCount } = await getDashboardCounts();
   return {
     message: "",
     error: "",
@@ -20,11 +16,11 @@ function getLogData(overrides = {}) {
   };
 }
 
-function getAnalyticsData() {
+async function getAnalyticsData() {
   return getAnalytics();
 }
 
-function addLogEntry(reps, source = "server") {
+async function addLogEntry(reps, source = "server") {
   return appendLogEntry(reps, source);
 }
 

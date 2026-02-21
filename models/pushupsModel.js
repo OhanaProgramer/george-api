@@ -1,7 +1,8 @@
-const fs = require("fs");
-const path = require("path");
+const {
+  readEvents,
+  writeEvents,
+} = require("../src/domains/pushups/pushups.store");
 
-const DATA_FILE = path.join(__dirname, "..", "data", "pushups.json");
 const GOAL_TOTAL_2026 = 30000;
 const GOAL_START_2026 = "2026-01-01";
 const GOAL_DEADLINE_2026 = "2026-12-22";
@@ -47,18 +48,18 @@ function createEmptyData() {
   };
 }
 
-function loadData() {
-  if (!fs.existsSync(DATA_FILE)) {
+async function loadData() {
+  const data = await readEvents();
+  if (!data || typeof data !== "object" || Array.isArray(data) || Object.keys(data).length === 0) {
     const fresh = createEmptyData();
-    fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    fs.writeFileSync(DATA_FILE, JSON.stringify(fresh, null, 2) + "\n", "utf8");
+    await writeEvents(fresh);
     return fresh;
   }
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+  return data;
 }
 
-function saveData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2) + "\n", "utf8");
+async function saveData(data) {
+  await writeEvents(data);
 }
 
 function getLifetimeCount(data) {
@@ -73,8 +74,8 @@ function getTodayCountFromLog(data, todayKey) {
   }, 0);
 }
 
-function appendLogEntry(reps, source = "server") {
-  const data = loadData();
+async function appendLogEntry(reps, source = "server") {
+  const data = await loadData();
   const now = new Date();
   const today = dateKeyLocal(now);
 
@@ -99,12 +100,12 @@ function appendLogEntry(reps, source = "server") {
   data.summary.today = { date: today, count: Number(data.daily[today] || 0) };
   data.summary.lifetime = getLifetimeCount(data);
 
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function getDashboardCounts() {
-  const data = loadData();
+async function getDashboardCounts() {
+  const data = await loadData();
   const today = dateKeyLocal();
   return {
     todayCount: getTodayCountFromLog(data, today),
@@ -174,8 +175,8 @@ function activeDays(daily, endKey, days) {
   return count;
 }
 
-function getStats() {
-  const data = loadData();
+async function getStats() {
+  const data = await loadData();
   const todayKey = dateKeyLocal();
   const daily = buildDailyFromLog(data);
 
@@ -234,8 +235,8 @@ function getStats() {
   };
 }
 
-function getAnalytics() {
-  const stats = getStats();
+async function getAnalytics() {
+  const stats = await getStats();
   const paceDelta = stats.goal.ahead_behind;
   const onPace = stats.goal.on_pace_today;
   const weeklyJump = stats.risk.weekly_jump_pct;
