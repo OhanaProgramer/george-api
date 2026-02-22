@@ -1,6 +1,6 @@
 const path = require("path");
 const { getAnalytics, getStats } = require("../../../models/pushupsModel");
-const { readEvents, writeDerived, writePublish } = require("./pushups.store");
+const { readEvents, readPublish, writeDerived, writePublish } = require("./pushups.store");
 
 const derivedPath = path.join(process.cwd(), "data", "pushups", "derived.json");
 const publishPath = path.join(process.cwd(), "data", "pushups", "publish.json");
@@ -95,20 +95,67 @@ function buildSeriesFields(events) {
   return { series_60d, avg_14d };
 }
 
+function meanTotals(points) {
+  if (!Array.isArray(points) || points.length === 0) return null;
+  let sum = 0;
+  for (const point of points) {
+    sum += Number(point && point.total) || 0;
+  }
+  return sum / points.length;
+}
+
+function buildFlagFields(series_60d, targetDaily) {
+  const metrics = {
+    avg_recent_14: null,
+    avg_prior_14: null,
+  };
+  const flags = {
+    trend_down: false,
+    below_target_projection: false,
+  };
+
+  if (!Array.isArray(series_60d) || series_60d.length === 0) {
+    return { metrics, flags };
+  }
+
+  // Use recent 14d vs prior 14d to detect direction change without overreacting to single-day spikes.
+  const recentWindow = series_60d.slice(-14);
+  const avgRecent = meanTotals(recentWindow);
+  metrics.avg_recent_14 = avgRecent === null ? null : round1(avgRecent);
+
+  // Require a full prior 14d block so the comparison is deterministic and apples-to-apples.
+  if (series_60d.length >= 28) {
+    const priorWindow = series_60d.slice(-28, -14);
+    const avgPrior = meanTotals(priorWindow);
+    metrics.avg_prior_14 = avgPrior === null ? null : round1(avgPrior);
+    if (avgRecent !== null && avgPrior !== null) {
+      flags.trend_down = avgRecent < avgPrior * 0.85;
+    }
+  }
+
+  if (Number.isFinite(targetDaily) && targetDaily > 0 && avgRecent !== null) {
+    flags.below_target_projection = avgRecent < targetDaily;
+  }
+
+  return { metrics, flags };
+}
+
 async function rebuildPushups({ nowTs } = {}) {
   const events = await readEvents();
   const stats = await getStats({ nowTs });
   const analytics = await getAnalytics({ nowTs });
+  const existingPublish = await readPublish();
   const { series_60d, avg_14d } = buildSeriesFields(events);
+  const targetDailyRaw = Number(existingPublish && existingPublish.target_daily);
+  const targetDaily = Number.isFinite(targetDailyRaw) ? targetDailyRaw : 0;
+  const { metrics, flags } = buildFlagFields(series_60d, targetDaily);
   const publish = {
     ...analytics,
     series_60d,
     avg_14d,
-    target_daily: 0,
-    flags: {
-      trend_down: false,
-      below_target_projection: false,
-    },
+    target_daily: targetDaily,
+    flags,
+    metrics,
   };
 
   await writeDerived(stats);

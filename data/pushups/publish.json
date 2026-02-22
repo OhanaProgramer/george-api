@@ -543,7 +543,11 @@
   ],
   "target_daily": 0,
   "flags": {
-    "trend_down": false,
+    "trend_down": true,
     "below_target_projection": false
+  },
+  "metrics": {
+    "avg_recent_14": 78.7,
+    "avg_prior_14": 119.1
   }
 }

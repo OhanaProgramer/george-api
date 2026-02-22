@@ -43,6 +43,20 @@
         color: #5a6778;
       }
 
+      .flag-box {
+        border: 1px solid #ffd5c4;
+        border-radius: 12px;
+        background: #fff7f3;
+        color: #6f2a0f;
+        padding: 0.75rem 0.85rem;
+        margin: 0.65rem 0 0;
+      }
+
+      .flag-box strong {
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+
       @media (max-width: 760px) {
         .chart-frame canvas {
           height: 220px;
@@ -55,6 +69,10 @@
       const chartSeries = (typeof series_60d !== "undefined" && Array.isArray(series_60d)) ? series_60d : [];
       const chartAvg14 = (typeof avg_14d !== "undefined" && Array.isArray(avg_14d)) ? avg_14d : [];
       const chartTarget = (typeof target_daily === "number") ? target_daily : 0;
+      const publishFlags = (typeof flags !== "undefined" && flags && typeof flags === "object") ? flags : {};
+      const publishMetrics = (typeof metrics !== "undefined" && metrics && typeof metrics === "object") ? metrics : {};
+      const avgRecent14 = Number.isFinite(Number(publishMetrics.avg_recent_14)) ? Number(publishMetrics.avg_recent_14) : null;
+      const avgPrior14 = Number.isFinite(Number(publishMetrics.avg_prior_14)) ? Number(publishMetrics.avg_prior_14) : null;
     %>
     <main class="shell">
       <div class="topbar">
@@ -117,6 +135,26 @@
               </div>
             <% } else { %>
               <p class="chart-empty">No chart data yet. Run rebuild.</p>
+            <% } %>
+
+            <% if (publishFlags.trend_down) { %>
+              <div class="flag-box" role="status" aria-live="polite">
+                <strong>Recent pace is down vs prior 2 weeks.</strong>
+                <% if (avgRecent14 !== null && avgPrior14 !== null) { %>
+                  <span>Recent 14d avg: <%= avgRecent14.toFixed(1) %> | Prior 14d avg: <%= avgPrior14.toFixed(1) %></span>
+                <% } %>
+              </div>
+            <% } %>
+
+            <% if (publishFlags.below_target_projection) { %>
+              <div class="flag-box" role="status" aria-live="polite">
+                <strong>Current 14-day average is below your target.</strong>
+                <% if (avgRecent14 !== null) { %>
+                  <span>Target: <%= chartTarget %> | Current 14d avg: <%= avgRecent14.toFixed(1) %></span>
+                <% } else { %>
+                  <span>Target: <%= chartTarget %></span>
+                <% } %>
+              </div>
             <% } %>
           </div>
         </article>
