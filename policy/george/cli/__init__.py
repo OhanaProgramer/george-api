@@ -1,2 +1,0 @@
-"""CLI layer for GeorgeAI."""
-

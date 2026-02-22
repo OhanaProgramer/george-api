@@ -1,2 +1,0 @@
-"""GeorgeAI core package."""
-
