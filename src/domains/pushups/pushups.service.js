@@ -1,4 +1,4 @@
-const { appendLogEntry, getAnalytics, getDashboardCounts } = require("../../../models/pushupsModel");
+const { appendLogEntry, getDashboardCounts } = require("../../../models/pushupsModel");
 const {
   readDerived,
   readPublish,
@@ -18,7 +18,7 @@ async function getLogData(overrides = {}) {
 }
 
 async function getAnalyticsData() {
-  return getAnalytics();
+  return getAnalyticsJson();
 }
 
 async function addLogEntry(reps, source = "server") {

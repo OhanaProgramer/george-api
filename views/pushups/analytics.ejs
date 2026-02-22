@@ -5,8 +5,57 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Pushups Analytics</title>
     <link rel="stylesheet" href="/public/styles.css" />
+    <style>
+      .chart-card {
+        padding: 0.75rem;
+      }
+
+      .chart-shell {
+        border: 1px solid #d7dee8;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        padding: 0.6rem;
+      }
+
+      .chart-caption {
+        margin: 0 0 0.45rem;
+        color: #5a6778;
+        font-size: 0.9rem;
+      }
+
+      .chart-frame {
+        position: relative;
+        width: 100%;
+      }
+
+      .chart-frame canvas {
+        display: block;
+        width: 100%;
+        height: 240px;
+      }
+
+      .chart-empty {
+        margin: 0;
+        border: 1px dashed #c6d4e6;
+        border-radius: 12px;
+        background: #f7fbff;
+        padding: 0.9rem;
+        color: #5a6778;
+      }
+
+      @media (max-width: 760px) {
+        .chart-frame canvas {
+          height: 220px;
+        }
+      }
+    </style>
   </head>
   <body>
+    <%
+      const chartSeries = (typeof series_60d !== "undefined" && Array.isArray(series_60d)) ? series_60d : [];
+      const chartAvg14 = (typeof avg_14d !== "undefined" && Array.isArray(avg_14d)) ? avg_14d : [];
+      const chartTarget = (typeof target_daily === "number") ? target_daily : 0;
+    %>
     <main class="shell">
       <div class="topbar">
         <a href="/pushups/log">Back to log</a>
@@ -58,6 +107,20 @@
           </article>
         </div>
 
+        <h2>Chart</h2>
+        <article class="card chart-card">
+          <div class="chart-shell">
+            <p class="chart-caption">Last 60 days (bars) + 14-day average (line)</p>
+            <% if (chartSeries.length > 0) { %>
+              <div class="chart-frame">
+                <canvas id="pushupsChart" aria-label="Pushups last 60 days chart"></canvas>
+              </div>
+            <% } else { %>
+              <p class="chart-empty">No chart data yet. Run rebuild.</p>
+            <% } %>
+          </div>
+        </article>
+
         <h2>How To Learn From This</h2>
         <article class="card">
           <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
@@ -80,5 +143,123 @@
         </article>
       </section>
     </main>
+    <script>
+      (function () {
+        const canvas = document.getElementById("pushupsChart");
+        if (!canvas) return;
+
+        const series = <%- JSON.stringify(chartSeries) %>;
+        const avg14 = <%- JSON.stringify(chartAvg14) %>;
+        const targetDaily = <%- JSON.stringify(chartTarget) %>;
+        if (!Array.isArray(series) || series.length === 0) return;
+
+        const frame = canvas.closest(".chart-frame");
+        const ctx = canvas.getContext("2d");
+        let resizeTimer = null;
+
+        function drawChart() {
+          const width = Math.max(280, Math.floor(frame.clientWidth || 0));
+          const height = 240;
+          const dpr = window.devicePixelRatio || 1;
+
+          canvas.width = Math.floor(width * dpr);
+          canvas.height = Math.floor(height * dpr);
+          canvas.style.width = width + "px";
+          canvas.style.height = height + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.clearRect(0, 0, width, height);
+
+          const pad = { top: 18, right: 10, bottom: 28, left: 10 };
+          const plotW = width - pad.left - pad.right;
+          const plotH = height - pad.top - pad.bottom;
+          const left = pad.left;
+          const top = pad.top;
+          const bottom = top + plotH;
+          const n = series.length;
+          if (!n || plotW <= 0 || plotH <= 0) return;
+
+          const totals = series.map((p) => Number(p && p.total) || 0);
+          const avgs = avg14.map((p) => Number(p && p.avg) || 0);
+          const maxVal = Math.max(1, ...totals, ...avgs, targetDaily > 0 ? targetDaily : 0);
+
+          const yFor = (value) => bottom - (Math.max(0, value) / maxVal) * plotH;
+
+          // Light reference lines keep the chart readable without a heavy axis system.
+          ctx.strokeStyle = "#e6edf7";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(left, top);
+          ctx.lineTo(left + plotW, top);
+          ctx.moveTo(left, bottom);
+          ctx.lineTo(left + plotW, bottom);
+          ctx.stroke();
+
+          ctx.fillStyle = "#5a6778";
+          ctx.font = "12px sans-serif";
+          ctx.fillText(String(Math.round(maxVal)), left, top - 4);
+
+          const slotW = plotW / n;
+          const barGap = n > 45 ? 1 : 2;
+          const barW = Math.max(1, slotW - barGap);
+
+          ctx.fillStyle = "rgba(31, 159, 255, 0.45)";
+          for (let i = 0; i < n; i += 1) {
+            const total = totals[i];
+            const h = (Math.max(0, total) / maxVal) * plotH;
+            const x = left + i * slotW + (slotW - barW) / 2;
+            const y = bottom - h;
+            ctx.fillRect(x, y, barW, h);
+          }
+
+          if (targetDaily > 0) {
+            const ty = yFor(targetDaily);
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = "rgba(217, 63, 11, 0.5)";
+            ctx.beginPath();
+            ctx.moveTo(left, ty);
+            ctx.lineTo(left + plotW, ty);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          ctx.strokeStyle = "#ff6b2c";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i < n; i += 1) {
+            const v = avgs[i];
+            const x = left + i * slotW + slotW / 2;
+            const y = yFor(v);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          const labelIdx = [0, Math.floor((n - 1) / 2), n - 1];
+          const seen = new Set();
+          ctx.fillStyle = "#5a6778";
+          ctx.font = "11px sans-serif";
+          ctx.textBaseline = "top";
+          for (const idx of labelIdx) {
+            if (seen.has(idx)) continue;
+            seen.add(idx);
+            const point = series[idx];
+            if (!point || !point.date) continue;
+            const label = String(point.date).slice(5);
+            const x = left + idx * slotW + slotW / 2;
+            const textW = ctx.measureText(label).width;
+            const tx = Math.max(left, Math.min(left + plotW - textW, x - textW / 2));
+            ctx.fillText(label, tx, bottom + 7);
+          }
+        }
+
+        function debounceRedraw() {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(drawChart, 120);
+        }
+
+        drawChart();
+        window.addEventListener("resize", debounceRedraw);
+      })();
+    </script>
   </body>
 </html>
