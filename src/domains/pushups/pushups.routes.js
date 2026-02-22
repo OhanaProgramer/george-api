@@ -11,29 +11,8 @@ const { readSettings, writeSettings } = require("./pushups.settings");
 
 const router = express.Router();
 
-function parseBearer(req) {
-  const h = req.headers.authorization || "";
-  const m = h.match(/^Bearer\s+(.+)$/i);
-  return m ? m[1].trim() : "";
-}
-
-function tokenSetFromEnv(name) {
-  return new Set(
-    String(process.env[name] || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-  );
-}
-
-const ADMIN_TOKENS = tokenSetFromEnv("SITE_TOKENS_ADMIN");
-
 function requireAdminToken(req, res, next) {
-  if (ADMIN_TOKENS.size === 0) {
-    return res.status(500).send("SITE_TOKENS_READONLY / SITE_TOKENS_ADMIN not set");
-  }
-  const key = parseBearer(req);
-  if (!ADMIN_TOKENS.has(key)) {
+  if (!req.auth || req.auth.scope !== "admin") {
     return res.status(401).send("Unauthorized");
   }
   return next();

@@ -91,6 +91,7 @@ echo "Starting server for smoke on port ${SMOKE_PORT}…"
   export PORT="$SMOKE_PORT"
   export SITE_TOKENS_READONLY="$SMOKE_READ_TOKEN"
   export SITE_TOKENS_ADMIN="$SMOKE_ADMIN_TOKEN"
+  export SESSION_SECRET="${SESSION_SECRET:-smoke-session-secret}"
   node server.js
 ) >> "$LOG_FILE" 2>&1 &
 SERVER_PID=$!
@@ -114,6 +115,7 @@ fi
 # Tests
 # 1) /health is public
 expect_code 200 GET "${BASE_URL}/health" ""
+expect_code 200 GET "${BASE_URL}/login" ""
 
 # 2) Protected pages should reject missing auth
 expect_code 401 GET "${BASE_URL}/pushups/log" ""

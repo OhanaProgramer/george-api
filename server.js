@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const { execSync } = require("child_process");
+const session = require("express-session");
+const bcrypt = require("bcryptjs");
 const pushupsRouter = require("./src/domains/pushups");
 const packageJson = require("./package.json");
 
@@ -29,10 +31,27 @@ function resolveBuildId() {
 
 const APP_VERSION = String(packageJson.version || "0.0.0");
 const BUILD_ID = resolveBuildId();
+const BUILD_DATE = formatDateLocal(new Date());
+
+function isAdminSession(req) {
+  return !!(req.session && req.session.isAdmin === true);
+}
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: false }));
+app.use(session({
+  name: "george.sid",
+  secret: process.env.SESSION_SECRET || "dev-session-secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, sameSite: "lax" },
+}));
+app.use((req, res, next) => {
+  res.locals.appMeta = { version: APP_VERSION, build: BUILD_ID, date: BUILD_DATE };
+  res.locals.auth = req.auth || { scope: "unknown" };
+  next();
+});
 
 // ------------------------------
 // 📘 Teach-mode: Header-based API key auth (Option A)
@@ -65,11 +84,17 @@ const ADMIN = setFromEnv("SITE_TOKENS_ADMIN");
 
 function requireApiKey(req, res, next) {
   // Public endpoints
-  if (req.path === "/health") return next();
+  if (req.path === "/health" || req.path === "/login") return next();
 
   const key = parseBearer(req);
+  const adminSession = isAdminSession(req);
 
   if (READONLY.size === 0 || ADMIN.size === 0) {
+    if (adminSession) {
+      req.auth = { scope: "admin" };
+      res.locals.auth = req.auth;
+      return next();
+    }
     return res.status(500).send("SITE_TOKENS_READONLY / SITE_TOKENS_ADMIN not set");
   }
 
@@ -82,10 +107,11 @@ function requireApiKey(req, res, next) {
 
   // 📘 Teach-mode: ADMIN should be a superset.
   // If you have an admin key, you can always read.
-  const ok = isRead ? (READONLY.has(key) || isAdminKey) : isAdminKey;
+  const ok = isRead ? (READONLY.has(key) || isAdminKey || adminSession) : (isAdminKey || adminSession);
   if (!ok) return res.status(401).send("Unauthorized");
 
-  req.auth = { scope: isAdminKey ? "admin" : "readonly" };
+  req.auth = { scope: (isAdminKey || adminSession) ? "admin" : "readonly" };
+  res.locals.auth = req.auth;
   return next();
 }
 
@@ -93,16 +119,48 @@ app.get("/health", (req, res) => {
   res.status(200).json({ ok: true, service: "george-api-local", ts: new Date().toISOString() });
 });
 
-app.use(requireApiKey);
-app.use((req, res, next) => {
-  res.locals.appMeta = {
-    version: APP_VERSION,
-    build: BUILD_ID,
-    date: formatDateLocal(new Date()),
-  };
-  res.locals.auth = req.auth || { scope: "unknown" };
-  next();
+app.get("/login", (req, res) => {
+  if (isAdminSession(req)) {
+    return res.redirect(302, "/pushups/settings");
+  }
+  return res.status(200).render("login", { error: "" });
 });
+
+app.post("/login", async (req, res) => {
+  const username = String(req.body.username || "");
+  const password = String(req.body.password || "");
+  const expectedUser = process.env.ADMIN_USERNAME || "";
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH || "";
+
+  if (!expectedUser || !passwordHash) {
+    return res.status(500).render("login", { error: "Admin login is not configured." });
+  }
+
+  try {
+    const userOk = username === expectedUser;
+    const passOk = userOk ? await bcrypt.compare(password, passwordHash) : false;
+    if (!userOk || !passOk) {
+      return res.status(401).render("login", { error: "Invalid username or password." });
+    }
+    req.session.isAdmin = true;
+    return res.redirect(302, "/pushups/settings");
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).render("login", { error: "Unable to process login right now." });
+  }
+});
+
+app.post("/logout", (req, res) => {
+  if (!req.session) {
+    return res.redirect(302, "/");
+  }
+  req.session.destroy(() => {
+    res.clearCookie("george.sid");
+    res.redirect(302, "/");
+  });
+});
+
+app.use(requireApiKey);
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {

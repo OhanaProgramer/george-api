@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <strong>Worlds Abound Private</strong>
+        <a href="/pushups/log">Back to log</a>
+      </div>
+
+      <section class="panel">
+        <h1>Admin Login</h1>
+        <p class="subtle">Sign in to access settings without using a bearer token in the browser.</p>
+
+        <% if (error) { %>
+          <p class="err"><%= error %></p>
+        <% } %>
+
+        <form method="post" action="/login">
+          <div class="card">
+            <div style="display:grid; gap:0.9rem;">
+              <div>
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" required autocomplete="username" />
+              </div>
+              <div>
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" required autocomplete="current-password" />
+              </div>
+              <button type="submit">Sign In</button>
+            </div>
+          </div>
+        </form>
+      </section>
+      <%- include("./partials/footer") %>
+    </main>
+  </body>
+</html>
