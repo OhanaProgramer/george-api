@@ -541,7 +541,7 @@
       "avg": 71.6
     }
   ],
-  "target_daily": 82,
+  "target_daily": 114,
   "flags": {
     "trend_down": true,
     "below_target_projection": true
@@ -551,7 +551,7 @@
     "avg_prior_14": 117.8
   },
   "settings_summary": {
-    "goal_total": 30000,
+    "goal_total": 40000,
     "target_date": "2026-12-31",
     "target_daily_override": 0
   }

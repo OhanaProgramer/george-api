@@ -9,7 +9,9 @@ set +m
 # - Uses Authorization: Bearer <token>
 # ---------------------------------------------
 
-SMOKE_PORT="${SMOKE_PORT:-3100}"
+if [[ -z "${SMOKE_PORT:-}" ]]; then
+  SMOKE_PORT="$(node -e 'const net=require("net"); const s=net.createServer(); s.listen(0,"127.0.0.1",()=>{console.log(s.address().port); s.close();});')"
+fi
 BASE_URL="${BASE_URL:-http://127.0.0.1:${SMOKE_PORT}}"
 
 # Tokens can be provided via env, otherwise use dev defaults.
@@ -116,14 +118,17 @@ expect_code 200 GET "${BASE_URL}/health" ""
 # 2) Protected pages should reject missing auth
 expect_code 401 GET "${BASE_URL}/pushups/log" ""
 expect_code 401 GET "${BASE_URL}/pushups/analytics" ""
+expect_code 401 GET "${BASE_URL}/pushups/settings" ""
 
 # 3) Readonly token should allow reads
 expect_code 200 GET "${BASE_URL}/pushups/log" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/analytics" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/stats.json" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/analytics.json" "$SMOKE_READ_TOKEN"
+expect_code 401 GET "${BASE_URL}/pushups/settings" "$SMOKE_READ_TOKEN"
 
 # 4) Admin token should also allow reads (admin is a superset)
 expect_code 200 GET "${BASE_URL}/pushups/stats.json" "$SMOKE_ADMIN_TOKEN"
+expect_code 200 GET "${BASE_URL}/pushups/settings" "$SMOKE_ADMIN_TOKEN"
 
 echo "Smoke test passed"

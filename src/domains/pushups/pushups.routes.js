@@ -104,7 +104,7 @@ router.get("/pushups/settings", requireAdminToken, async (req, res) => {
     settings,
     computedTargetDaily: Number(publish && publish.target_daily) || 0,
     error: "",
-    message: req.query.saved === "1" ? "Settings saved." : "",
+    message: req.query.ok === "1" ? "Settings saved." : "",
   });
 });
 
@@ -118,7 +118,7 @@ router.post("/pushups/settings", requireAdminToken, async (req, res) => {
   try {
     await writeSettings(form);
     await rebuildPushups();
-    return res.redirect(302, "/pushups/settings?saved=1");
+    return res.redirect(302, "/pushups/settings?ok=1");
   } catch (err) {
     const [currentSettings, publish] = await Promise.all([
       readSettings().catch(() => ({
