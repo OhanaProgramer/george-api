@@ -1,0 +1,2 @@
+"""MyFitnessPal provider package."""
+

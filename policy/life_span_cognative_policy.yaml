@@ -1,0 +1,177 @@
+version: 1.0
+last_updated: 2026-02-20
+
+# -------------------------------------------------
+# 1. PURPOSE (Cognitive Domain)
+# -------------------------------------------------
+
+purpose:
+  primary_objective: >
+    Maintain cognitive clarity across lifespan through
+    structured learning, active retrieval, and sustained
+    intellectual engagement.
+  time_horizon: "Decades"
+  priority_order:
+    - maintain_clarity
+    - cognitive_longevity
+    - structured_learning_continuity
+    - novelty_exposure
+    - performance_metrics
+
+# -------------------------------------------------
+# 2. GLOBAL PRINCIPLES
+# -------------------------------------------------
+
+principles:
+
+  novelty_required:
+    description: >
+      New concepts or material should be introduced
+      regularly to stimulate cognitive growth.
+    minimum_novelty_frequency: "weekly"
+
+  retrieval_required:
+    description: >
+      Active recall (testing, production, memory use)
+      strengthens long-term retention and neural networks.
+    minimum_retrieval_frequency: "weekly"
+
+  consistency_required:
+    description: >
+      Learning engagement should occur regularly to
+      prevent drift and preserve cognitive clarity.
+    minimum_days_per_week: 5
+
+  avoid_passive_mode:
+    description: >
+      Passive consumption (reading/watching without recall)
+      should not dominate learning activity.
+
+  no_escalation_pressure:
+    description: >
+      Performance speed, streak length, or volume accumulation
+      are not primary objectives.
+
+# -------------------------------------------------
+# 3. DRIFT MODEL
+# -------------------------------------------------
+
+drift_model:
+
+  confirmation_required: true
+  minimum_signals_for_flag: 2
+
+  engagement_drift:
+    condition: "learning_days_last_7 < 5"
+    classification: "engagement_drift"
+
+  stagnation_risk:
+    condition: "no_novelty_introduced_for_30_days"
+    classification: "stagnation_risk"
+
+  retrieval_absence:
+    condition: "no_retrieval_session_this_week"
+    classification: "retrieval_gap"
+
+  passive_mode_dominant:
+    condition: "passive_sessions_exceed_active_sessions"
+    classification: "passive_mode_dominant"
+
+  classifications:
+    - stable_engagement
+    - novelty_growth
+    - engagement_drift
+    - stagnation_risk
+    - retrieval_gap
+    - passive_mode_dominant
+
+# -------------------------------------------------
+# 4. CONFLICT RESOLUTION
+# -------------------------------------------------
+
+conflict_resolution:
+
+  priority_hierarchy:
+    1: retrieval
+    2: novelty
+    3: consistency
+    4: performance_metrics
+
+  rules:
+
+    novelty_without_retrieval:
+      action: "prioritize_retrieval_next_cycle"
+
+    retrieval_without_novelty:
+      action: "introduce_new_material_next_cycle"
+
+    high_consistency_low_novelty:
+      action: "schedule_structured_novel_input"
+
+# -------------------------------------------------
+# 5. METRIC REQUIREMENTS
+# -------------------------------------------------
+
+required_metrics:
+  - learning_days_last_7
+  - novelty_introduced_this_week
+  - retrieval_session_completed_this_week
+  - consecutive_days_missed
+
+optional_metrics:
+  - weekly_recall_accuracy_percent
+  - new_items_introduced_count
+
+# -------------------------------------------------
+# 6. LLM CONSTRAINTS
+# -------------------------------------------------
+
+llm_constraints:
+
+  role_definition:
+    description: >
+      The LLM interprets cognitive engagement patterns.
+      It does not escalate difficulty or impose volume pressure.
+
+  permissions:
+    may_interpret: true
+    may_suggest_review_topics: true
+    may_modify_thresholds: false
+    may_create_new_guardrails: false
+
+  required_output_structure:
+    must_include:
+      - current_classification
+      - confirming_signals
+      - interpretation_summary
+      - watch_items
+      - confidence_level
+
+  confidence_levels:
+    allowed_values:
+      - high
+      - medium
+      - low
+
+# -------------------------------------------------
+# 7. IDENTITY ALIGNMENT
+# -------------------------------------------------
+
+identity:
+
+  system_character:
+    description: >
+      This system reinforces identity as a lifelong learner.
+      Depth of understanding is prioritized over speed
+      or gamified achievement.
+
+  core_principles:
+    - clarity_over_speed
+    - depth_over_volume
+    - retrieval_over_exposure
+    - curiosity_over_ego
+
+  resist_patterns:
+    - streak_chasing_behavior
+    - performance_identity_attachment
+    - passive_consumption_dominance

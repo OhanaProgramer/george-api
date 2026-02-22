@@ -1,0 +1,285 @@
+version: 1.0
+last_updated: 2026-02-20
+
+# -------------------------------------------------
+# 1. PURPOSE (North Star Constraint)
+# -------------------------------------------------
+
+purpose:
+  primary_objective: >
+    Sustain physical capability,
+    and injury-resistant movement across lifespan.
+  time_horizon: "Decades"
+  priority_order:
+    - longevity
+    - injury_prevention
+    - consistency
+    - gradual_improvement
+    - peak_performance
+
+# -------------------------------------------------
+# 2. GLOBAL PRINCIPLES (Modality-Agnostic)
+# -------------------------------------------------
+
+principles:
+
+  progressive_overload:
+    weekly_change_bounds_percent:
+      minimum: 0
+      maximum: 15
+    volatility_preference: "low"
+
+  consistency_over_intensity:
+    volatility_limit_percent: 30
+    feast_famine_cycles: "flag"
+
+  recovery_is_structural:
+    minimum_recovery_days_per_week: 1
+    sleep_floor_hours: 6.5
+    hrv_drop_percent_threshold: 10
+    override_priority: true
+
+  variation_prevents_fragility:
+    minimum_modalities_per_week: 2
+
+  long_term_bias:
+  recovery_overrides_performance: true
+  intentional_load_reduction_allowed: true
+  regression_is_not_failure_if_protective: true
+
+  review_structure:
+  weekly_review:
+    purpose: "pattern awareness"
+    allow_policy_change: false
+
+  rolling_28_day_review:
+    purpose: "controlled adjustment window"
+    allow_policy_change: true
+
+  quarterly_review:
+    purpose: "structural evaluation"
+    allow_policy_change: true
+
+  ai_role:
+    detect_patterns: true
+    suggest_review: true
+    auto_adjust_training: false
+
+# -------------------------------------------------
+# 3. RISK MANAGEMENT MODEL
+# -------------------------------------------------
+
+risk_model:
+
+  confirmation_required: true
+  minimum_signals_for_flag: 2
+
+  volume_spike:
+    threshold_percent: 20
+    require_recovery_signal: true
+
+  efficiency_drift:
+    cardio_hr_delta_percent_threshold: 7
+    sessions_required: 2
+    within_days: 14
+    require_sleep_confirmation: true
+
+  recovery_mismatch:
+    sleep_floor_hours: 6.5
+    consecutive_days_threshold: 3
+    require_volume_increase: true
+
+  adaptation_plateau:
+    rolling_window_days: 60
+    minimum_progress_percent: 2
+    require_no_deload_recorded: true
+
+  compound_load_collision:
+    detection_window_days: 14
+    require_multiple_modalities_increase: true
+    require_sleep_drop: true
+    require_efficiency_drop: true
+
+  classifications:
+    stable
+    controlled_growth
+    fatigue_risk
+    recovery_conflict
+    compound_load_risk
+    adaptation_plateau
+    detraining_risk
+
+# -------------------------------------------------
+# 4. CONFLICT RESOLUTION RULES
+# -------------------------------------------------
+
+conflict_resolution:
+
+  philosophy:
+    description: >
+      When signals conflict, long-term system stability
+      overrides short-term performance gains.
+
+  priority_hierarchy:
+    1: injury_prevention
+    2: recovery_stability
+    3: consistency
+    4: gradual_progression
+    5: peak_output
+
+  rules:
+
+    volume_vs_recovery:
+      condition: "volume_increasing AND recovery_signal_negative"
+      winner: "recovery"
+      action: "reduce_or_hold_load"
+
+    multi_modality_increase:
+      condition: "two_or_more_modalities_increasing_simultaneously"
+      require_staggering: true
+      action: "freeze_secondary_modality"
+
+    injury_signal_present:
+      condition: "injury_probability_rising"
+      override_all_other_goals: true
+      action: "immediate_load_reduction"
+
+    efficiency_drop_with_volume_increase:
+      condition: "efficiency_drift_confirmed AND volume_increasing"
+      winner: "recovery"
+      action: "hold_or_reduce_intensity"
+
+  review_gate_enforcement:
+    immediate_adjustment_allowed: false
+    adjustments_permitted_during:
+      - rolling_28_day_review
+      - quarterly_review
+
+# -------------------------------------------------
+# 5. METRIC REQUIREMENTS
+# -------------------------------------------------
+
+required_metrics:
+
+  - weekly_volume
+  - rolling_7_day_average
+  - rolling_30_day_average
+  - percent_change_week_over_week
+  - active_days_last_30
+
+optional_metrics:
+  - heart_rate_variability
+  - sleep_hours
+  - soreness_index
+  - cadence_variability
+
+# -------------------------------------------------
+# 6. LLM CONSTRAINTS
+# -------------------------------------------------
+
+llm_constraints:
+
+  role_definition:
+    description: >
+      The LLM functions as a narrative and analytical layer.
+      It does not modify policy, thresholds, or classifications.
+      It explains and interprets system outputs.
+
+  permissions:
+
+    may_interpret: true
+    may_explain_classifications: true
+    may_suggest_review_topics: true
+
+    may_suggest_actions:
+      allowed_only_during_review_windows: true
+      review_windows:
+        - rolling_28_day_review
+        - quarterly_review
+
+    may_issue_micro_actions_outside_review: false
+
+    may_modify_thresholds: false
+    may_override_policy: false
+    may_create_new_guardrails: false
+
+  required_output_structure:
+
+    must_include:
+      - current_classification
+      - confirming_signals
+      - review_window_status
+      - interpretation_summary
+      - watch_items
+      - confidence_level
+
+    confidence_levels:
+      allowed_values:
+        - high
+        - medium
+        - low
+      basis: >
+        Confidence is derived from signal completeness,
+        signal agreement (multi-confirmation),
+        and data sufficiency.
+
+  data_integrity_rules:
+
+    if_required_metric_missing:
+      must_state_insufficient_data: true
+      must_reduce_confidence: true
+      may_not_issue_recommendation: true
+
+  signal_confirmation_requirement:
+    minimum_signals_for_action_or_flag: 2
+    single_signal_changes_are_actionable: false
+
+  injury_override_protection:
+    injury_signal_is_absolute_override: true
+    llm_cannot_override_injury_rule: true
+
+# -------------------------------------------------
+# 7. IDENTITY ALIGNMENT
+# -------------------------------------------------
+
+identity:
+
+  system_character:
+    description: >
+      This system prioritizes long-term functional longevity
+      over short-term performance gains. Stability and
+      sustainability are valued above intensity or optimization.
+
+  core_principles:
+    - stability_over_volatility
+    - slow_compounding_progress
+    - injury_avoidance_is_performance
+    - consistency_is_non_negotiable
+    - recovery_is_equal_to_workload
+    - governance_before_optimization
+
+  behavioral_bias:
+
+    prefer:
+      - gradual_adjustment
+      - confirmed_signals
+      - review_gated_changes
+      - long_horizon_decisions
+
+    resist:
+      - ego_spikes
+      - reactionary_overcorrection
+      - optimization_pressure
+      - streak_chasing_behavior
+      - performance_identity_attachment
+
+  drift_protection:
+
+    if_system_becomes_performance_optimized:
+      trigger_review: true
+
+    if_adjustment_frequency_increases:
+      require_policy_review: true
+
+    if_volatility_rises_without_policy_change:
+      classify_as_identity_drift: true
