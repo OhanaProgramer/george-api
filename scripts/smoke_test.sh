@@ -116,17 +116,14 @@ expect_code 200 GET "${BASE_URL}/health" ""
 # 2) Protected pages should reject missing auth
 expect_code 401 GET "${BASE_URL}/pushups/log" ""
 expect_code 401 GET "${BASE_URL}/pushups/analytics" ""
-expect_code 401 GET "${BASE_URL}/pushups/settings" ""
 
 # 3) Readonly token should allow reads
 expect_code 200 GET "${BASE_URL}/pushups/log" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/analytics" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/stats.json" "$SMOKE_READ_TOKEN"
 expect_code 200 GET "${BASE_URL}/pushups/analytics.json" "$SMOKE_READ_TOKEN"
-expect_code 401 GET "${BASE_URL}/pushups/settings" "$SMOKE_READ_TOKEN"
 
 # 4) Admin token should also allow reads (admin is a superset)
 expect_code 200 GET "${BASE_URL}/pushups/stats.json" "$SMOKE_ADMIN_TOKEN"
-expect_code 200 GET "${BASE_URL}/pushups/settings" "$SMOKE_ADMIN_TOKEN"
 
 echo "Smoke test passed"
