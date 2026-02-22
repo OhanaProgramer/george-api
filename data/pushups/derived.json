@@ -4,25 +4,25 @@
     "period_start": "2026-01-01",
     "target_date": "2026-12-22",
     "target_total": 30000,
-    "current_total_2026": 4392,
+    "current_total_2026": 4417,
     "expected_total_by_today": 4466.29,
-    "ahead_behind": -74.29,
-    "required_per_day_remaining": 84.24,
-    "projected_total_by_target_30d_pace": 32975,
+    "ahead_behind": -49.29,
+    "required_per_day_remaining": 84.15,
+    "projected_total_by_target_30d_pace": 33252.5,
     "on_pace_today": false
   },
   "consistency": {
-    "avg_7d": 26.71,
-    "avg_30d": 94.33,
-    "active_days_30d": 27
+    "avg_7d": 30.29,
+    "avg_30d": 95.17,
+    "active_days_30d": 28
   },
   "risk": {
-    "last_7d_total": 187,
+    "last_7d_total": 212,
     "prior_7d_total": 790,
-    "weekly_jump_pct": -76.33,
+    "weekly_jump_pct": -73.16,
     "high_ramp_risk": false
   },
   "totals": {
-    "lifetime_all_years": 4452
+    "lifetime_all_years": 4477
   }
 }

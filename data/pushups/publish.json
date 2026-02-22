@@ -4,31 +4,31 @@
     "period_start": "2026-01-01",
     "target_date": "2026-12-22",
     "target_total": 30000,
-    "current_total_2026": 4392,
+    "current_total_2026": 4417,
     "expected_total_by_today": 4466.29,
-    "ahead_behind": -74.29,
-    "required_per_day_remaining": 84.24,
-    "projected_total_by_target_30d_pace": 32975,
+    "ahead_behind": -49.29,
+    "required_per_day_remaining": 84.15,
+    "projected_total_by_target_30d_pace": 33252.5,
     "on_pace_today": false
   },
   "consistency": {
-    "avg_7d": 26.71,
-    "avg_30d": 94.33,
-    "active_days_30d": 27
+    "avg_7d": 30.29,
+    "avg_30d": 95.17,
+    "active_days_30d": 28
   },
   "risk": {
-    "last_7d_total": 187,
+    "last_7d_total": 212,
     "prior_7d_total": 790,
-    "weekly_jump_pct": -76.33,
+    "weekly_jump_pct": -73.16,
     "high_ramp_risk": false
   },
   "totals": {
-    "lifetime_all_years": 4452
+    "lifetime_all_years": 4477
   },
   "interpretation": {
     "pace": {
       "status": "Behind pace",
-      "advice": "Close the gap with a controlled increase toward 84.24 reps/day."
+      "advice": "Close the gap with a controlled increase toward 84.15 reps/day."
     },
     "consistency": {
       "status": "Cooling",
@@ -43,12 +43,12 @@
     {
       "name": "One Lead Metric",
       "why": "Top performers anchor behavior to a single pace number each day.",
-      "action": "Hit or exceed required pace: 84.24 reps/day."
+      "action": "Hit or exceed required pace: 84.15 reps/day."
     },
     {
       "name": "Consistency Before Intensity",
       "why": "Sustained frequency compounds faster than occasional spikes.",
-      "action": "Target >= 24 active days per 30 days (currently 27)."
+      "action": "Target >= 24 active days per 30 days (currently 28)."
     },
     {
       "name": "Progressive Overload With Guardrails",
@@ -58,10 +58,6 @@
   ],
   "coach_note": "This week: close your pace gap by averaging 84 reps/day across 7 days.",
   "series_60d": [
-    {
-      "date": "2025-12-24",
-      "total": 0
-    },
     {
       "date": "2025-12-25",
       "total": 0
@@ -297,13 +293,13 @@
     {
       "date": "2026-02-21",
       "total": 12
+    },
+    {
+      "date": "2026-02-22",
+      "total": 25
     }
   ],
   "avg_14d": [
-    {
-      "date": "2025-12-24",
-      "avg": 0
-    },
     {
       "date": "2025-12-25",
       "avg": 0
@@ -334,27 +330,27 @@
     },
     {
       "date": "2026-01-01",
-      "avg": 10
+      "avg": 11.3
     },
     {
       "date": "2026-01-02",
-      "avg": 18
+      "avg": 20
     },
     {
       "date": "2026-01-03",
-      "avg": 24.5
+      "avg": 27
     },
     {
       "date": "2026-01-04",
-      "avg": 29.2
+      "avg": 31.8
     },
     {
       "date": "2026-01-05",
-      "avg": 31.5
+      "avg": 34.2
     },
     {
       "date": "2026-01-06",
-      "avg": 33.6
+      "avg": 36.2
     },
     {
       "date": "2026-01-07",
@@ -539,15 +535,24 @@
     {
       "date": "2026-02-21",
       "avg": 78.7
+    },
+    {
+      "date": "2026-02-22",
+      "avg": 71.6
     }
   ],
-  "target_daily": 0,
+  "target_daily": 82,
   "flags": {
     "trend_down": true,
-    "below_target_projection": false
+    "below_target_projection": true
   },
   "metrics": {
-    "avg_recent_14": 78.7,
-    "avg_prior_14": 119.1
+    "avg_recent_14": 71.6,
+    "avg_prior_14": 117.8
+  },
+  "settings_summary": {
+    "goal_total": 30000,
+    "target_date": "2026-12-31",
+    "target_daily_override": 0
   }
 }

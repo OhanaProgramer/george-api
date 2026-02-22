@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pushups Settings</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <a href="/pushups/analytics">Back to analytics</a>
+        <span class="subtle">Admin settings</span>
+      </div>
+
+      <section class="panel">
+        <h1>Pushups Settings</h1>
+        <p class="subtle">Update planning values used for publish output and flags.</p>
+
+        <% if (message) { %>
+          <div class="msg"><%= message %></div>
+        <% } %>
+        <% if (error) { %>
+          <div class="err"><%= error %></div>
+        <% } %>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="k">Computed Target / Day</div>
+            <div class="v"><%= computedTargetDaily %></div>
+          </div>
+          <div class="stat">
+            <div class="k">Override Mode</div>
+            <div class="v"><%= Number(settings.target_daily_override || 0) > 0 ? "On" : "Off" %></div>
+          </div>
+        </div>
+
+        <form method="post" action="/pushups/settings">
+          <div class="card">
+            <div style="display:grid; gap:0.9rem;">
+              <div>
+                <label for="goal_total">Goal total</label>
+                <input
+                  id="goal_total"
+                  name="goal_total"
+                  type="number"
+                  min="1"
+                  step="1"
+                  required
+                  value="<%= settings.goal_total %>"
+                />
+              </div>
+
+              <div>
+                <label for="target_date">Target date</label>
+                <input
+                  id="target_date"
+                  name="target_date"
+                  type="date"
+                  required
+                  value="<%= settings.target_date %>"
+                />
+              </div>
+
+              <div>
+                <label for="target_daily_override">Target daily override (0 disables override)</label>
+                <input
+                  id="target_daily_override"
+                  name="target_daily_override"
+                  type="number"
+                  min="0"
+                  step="1"
+                  required
+                  value="<%= settings.target_daily_override %>"
+                />
+              </div>
+
+              <button type="submit">Save Settings</button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

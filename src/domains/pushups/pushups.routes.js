@@ -5,9 +5,39 @@ const {
   getAnalyticsJson,
   getLogData,
   getStatsJson,
+  rebuildPushups,
 } = require("./pushups.service");
+const { readSettings, writeSettings } = require("./pushups.settings");
 
 const router = express.Router();
+
+function parseBearer(req) {
+  const h = req.headers.authorization || "";
+  const m = h.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1].trim() : "";
+}
+
+function tokenSetFromEnv(name) {
+  return new Set(
+    String(process.env[name] || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+}
+
+const ADMIN_TOKENS = tokenSetFromEnv("SITE_TOKENS_ADMIN");
+
+function requireAdminToken(req, res, next) {
+  if (ADMIN_TOKENS.size === 0) {
+    return res.status(500).send("SITE_TOKENS_READONLY / SITE_TOKENS_ADMIN not set");
+  }
+  const key = parseBearer(req);
+  if (!ADMIN_TOKENS.has(key)) {
+    return res.status(401).send("Unauthorized");
+  }
+  return next();
+}
 
 router.get("/pushups/log", async (req, res) => {
   const model = await getLogData();
@@ -62,6 +92,55 @@ router.post("/pushups/log", async (req, res) => {
 router.get("/pushups/analytics", async (req, res) => {
   const model = await getAnalyticsData();
   return res.status(200).render("pushups/analytics", model);
+});
+
+router.get("/pushups/settings", requireAdminToken, async (req, res) => {
+  const [settings, publish] = await Promise.all([
+    readSettings(),
+    getAnalyticsJson(),
+  ]);
+
+  return res.status(200).render("pushups/settings", {
+    settings,
+    computedTargetDaily: Number(publish && publish.target_daily) || 0,
+    error: "",
+    message: req.query.saved === "1" ? "Settings saved." : "",
+  });
+});
+
+router.post("/pushups/settings", requireAdminToken, async (req, res) => {
+  const form = {
+    goal_total: req.body.goal_total,
+    target_date: req.body.target_date,
+    target_daily_override: req.body.target_daily_override,
+  };
+
+  try {
+    await writeSettings(form);
+    await rebuildPushups();
+    return res.redirect(302, "/pushups/settings?saved=1");
+  } catch (err) {
+    const [currentSettings, publish] = await Promise.all([
+      readSettings().catch(() => ({
+        schema: 1,
+        goal_total: 30000,
+        target_date: "2026-12-31",
+        target_daily_override: 0,
+      })),
+      getAnalyticsJson().catch(() => ({})),
+    ]);
+    return res.status(400).render("pushups/settings", {
+      settings: {
+        ...currentSettings,
+        goal_total: form.goal_total,
+        target_date: form.target_date,
+        target_daily_override: form.target_daily_override,
+      },
+      computedTargetDaily: Number(publish && publish.target_daily) || 0,
+      error: err && err.message ? err.message : "Unable to save settings.",
+      message: "",
+    });
+  }
 });
 
 router.get("/pushups/stats.json", async (req, res) => {

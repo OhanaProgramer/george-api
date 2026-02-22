@@ -1,6 +1,7 @@
 const path = require("path");
 const { getAnalytics, getStats } = require("../../../models/pushupsModel");
-const { readEvents, readPublish, writeDerived, writePublish } = require("./pushups.store");
+const { readEvents, writeDerived, writePublish } = require("./pushups.store");
+const { readSettings } = require("./pushups.settings");
 
 const derivedPath = path.join(process.cwd(), "data", "pushups", "derived.json");
 const publishPath = path.join(process.cwd(), "data", "pushups", "publish.json");
@@ -44,6 +45,10 @@ function toDateKeyUtc(dateObj) {
 
 function round1(n) {
   return Math.round(n * 10) / 10;
+}
+
+function diffDaysUtc(startDate, endDate) {
+  return Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000));
 }
 
 function buildSeriesFields(events) {
@@ -140,14 +145,39 @@ function buildFlagFields(series_60d, targetDaily) {
   return { metrics, flags };
 }
 
+function computeDynamicTargetDaily(events, settings, nowTs) {
+  const override = Number(settings && settings.target_daily_override);
+  if (Number.isFinite(override) && override > 0) {
+    return Math.trunc(override);
+  }
+
+  const goalTotal = Math.trunc(Number(settings && settings.goal_total) || 0);
+  const targetDateKey = String(settings && settings.target_date ? settings.target_date : "");
+  const targetDate = parseDateKeyUtc(targetDateKey);
+  if (Number.isNaN(targetDate.getTime()) || goalTotal < 1) return 0;
+
+  let totalDone = 0;
+  for (const evt of events) {
+    if (!evt || evt.type !== "pushups.set") continue;
+    totalDone += Math.trunc(Number(evt.reps) || 0);
+  }
+
+  const nowRef = nowTs ? new Date(nowTs) : new Date();
+  const todayKey = toDateKeyInTz(nowRef, SERIES_TZ);
+  const todayDate = parseDateKeyUtc(todayKey);
+  const remaining = Math.max(0, goalTotal - totalDone);
+  const daysLeft = Math.max(1, diffDaysUtc(todayDate, targetDate) + 1);
+
+  return Math.ceil(remaining / daysLeft);
+}
+
 async function rebuildPushups({ nowTs } = {}) {
   const events = await readEvents();
   const stats = await getStats({ nowTs });
   const analytics = await getAnalytics({ nowTs });
-  const existingPublish = await readPublish();
+  const settings = await readSettings();
   const { series_60d, avg_14d } = buildSeriesFields(events);
-  const targetDailyRaw = Number(existingPublish && existingPublish.target_daily);
-  const targetDaily = Number.isFinite(targetDailyRaw) ? targetDailyRaw : 0;
+  const targetDaily = computeDynamicTargetDaily(events, settings, nowTs);
   const { metrics, flags } = buildFlagFields(series_60d, targetDaily);
   const publish = {
     ...analytics,
@@ -156,6 +186,11 @@ async function rebuildPushups({ nowTs } = {}) {
     target_daily: targetDaily,
     flags,
     metrics,
+    settings_summary: {
+      goal_total: settings.goal_total,
+      target_date: settings.target_date,
+      target_daily_override: settings.target_daily_override,
+    },
   };
 
   await writeDerived(stats);
