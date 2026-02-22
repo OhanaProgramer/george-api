@@ -4,31 +4,31 @@
     "period_start": "2026-01-01",
     "target_date": "2026-12-22",
     "target_total": 30000,
-    "current_total_2026": 4417,
+    "current_total_2026": 4747,
     "expected_total_by_today": 4466.29,
-    "ahead_behind": -49.29,
-    "required_per_day_remaining": 84.15,
-    "projected_total_by_target_30d_pace": 33252.5,
-    "on_pace_today": false
+    "ahead_behind": 280.71,
+    "required_per_day_remaining": 83.07,
+    "projected_total_by_target_30d_pace": 36915.5,
+    "on_pace_today": true
   },
   "consistency": {
-    "avg_7d": 30.29,
-    "avg_30d": 95.17,
-    "active_days_30d": 28
+    "avg_7d": 77.43,
+    "avg_30d": 106.17,
+    "active_days_30d": 29
   },
   "risk": {
-    "last_7d_total": 212,
+    "last_7d_total": 542,
     "prior_7d_total": 790,
-    "weekly_jump_pct": -73.16,
+    "weekly_jump_pct": -31.39,
     "high_ramp_risk": false
   },
   "totals": {
-    "lifetime_all_years": 4477
+    "lifetime_all_years": 4807
   },
   "interpretation": {
     "pace": {
-      "status": "Behind pace",
-      "advice": "Close the gap with a controlled increase toward 84.15 reps/day."
+      "status": "On pace",
+      "advice": "Stay steady. Keep daily output near your 30-day average."
     },
     "consistency": {
       "status": "Cooling",
@@ -43,12 +43,12 @@
     {
       "name": "One Lead Metric",
       "why": "Top performers anchor behavior to a single pace number each day.",
-      "action": "Hit or exceed required pace: 84.15 reps/day."
+      "action": "Hit or exceed required pace: 83.07 reps/day."
     },
     {
       "name": "Consistency Before Intensity",
       "why": "Sustained frequency compounds faster than occasional spikes.",
-      "action": "Target >= 24 active days per 30 days (currently 28)."
+      "action": "Target >= 24 active days per 30 days (currently 29)."
     },
     {
       "name": "Progressive Overload With Guardrails",
@@ -56,7 +56,7 @@
       "action": "Keep week-over-week volume change between 0% and +20% when possible."
     }
   ],
-  "coach_note": "This week: close your pace gap by averaging 84 reps/day across 7 days.",
+  "coach_note": "This week: rebuild consistency. Add one extra training day and match your 30-day average.",
   "series_60d": [
     {
       "date": "2025-12-25",
@@ -288,15 +288,15 @@
     },
     {
       "date": "2026-02-20",
-      "total": 0
+      "total": 125
     },
     {
       "date": "2026-02-21",
-      "total": 12
+      "total": 147
     },
     {
       "date": "2026-02-22",
-      "total": 25
+      "total": 95
     }
   ],
   "avg_14d": [
@@ -530,24 +530,24 @@
     },
     {
       "date": "2026-02-20",
-      "avg": 83.9
+      "avg": 92.9
     },
     {
       "date": "2026-02-21",
-      "avg": 78.7
+      "avg": 97.3
     },
     {
       "date": "2026-02-22",
-      "avg": 71.6
+      "avg": 95.1
     }
   ],
-  "target_daily": 114,
+  "target_daily": 113,
   "flags": {
     "trend_down": true,
     "below_target_projection": true
   },
   "metrics": {
-    "avg_recent_14": 71.6,
+    "avg_recent_14": 95.1,
     "avg_prior_14": 117.8
   },
   "settings_summary": {
