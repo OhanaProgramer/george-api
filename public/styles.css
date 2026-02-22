@@ -239,6 +239,13 @@ button:hover {
   font-weight: 700;
 }
 
+.app-footer {
+  margin: 0.85rem 0 0;
+  text-align: center;
+  color: #d6e7fb;
+  font-size: 0.85rem;
+}
+
 ol.rules {
   padding-left: 1.2rem;
 }
@@ -272,6 +279,12 @@ ol.rules li {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .app-footer {
+    font-size: 0.8rem;
+    text-align: left;
+    padding-left: 0.2rem;
   }
 
   h1 {

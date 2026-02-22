@@ -94,6 +94,11 @@ router.get("/pushups/analytics", async (req, res) => {
   return res.status(200).render("pushups/analytics", model);
 });
 
+router.get("/pushups/support", async (req, res) => {
+  const model = await getAnalyticsData();
+  return res.status(200).render("pushups/support", model);
+});
+
 router.get("/pushups/settings", requireAdminToken, async (req, res) => {
   const [settings, publish] = await Promise.all([
     readSettings(),

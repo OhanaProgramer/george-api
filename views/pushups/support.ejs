@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pushups Support</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <a href="/pushups/analytics">Back to analytics</a>
+        <span class="subtle">How this works</span>
+      </div>
+
+      <section class="panel">
+        <h1>Support / How This Works</h1>
+        <div class="links">
+          <a class="btn-link" href="/pushups/log">Log</a>
+          <a class="btn-link" href="/pushups/analytics">Analytics</a>
+        </div>
+
+        <h2>How To Learn From This</h2>
+        <article class="card">
+          <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
+          <p><strong>Consistency:</strong> <%= interpretation.consistency.status %> - <%= interpretation.consistency.advice %></p>
+          <p><strong>Risk:</strong> <%= interpretation.risk.status %> - <%= interpretation.risk.advice %></p>
+          <p class="subtle">Coach note stays on the analytics page so the main view remains action-focused.</p>
+        </article>
+
+        <h2>Pro/Dev High-Performer Rules</h2>
+        <article class="card">
+          <ol class="rules">
+            <% for (const item of pro_dev || []) { %>
+              <li>
+                <strong><%= item.name %></strong><br/>
+                Why: <%= item.why %><br/>
+                Action: <%= item.action %>
+              </li>
+            <% } %>
+          </ol>
+        </article>
+      </section>
+      <%- include("../partials/footer") %>
+    </main>
+  </body>
+</html>

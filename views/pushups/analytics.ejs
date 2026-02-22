@@ -83,8 +83,12 @@
       <section class="panel">
         <h1>Pushups Analytics</h1>
         <div class="links">
+          <a class="btn-link" href="/pushups/support">Support / How this works</a>
           <a class="btn-link" href="/pushups/analytics.json">Analytics JSON</a>
           <a class="btn-link" href="/pushups/stats.json">Stats JSON</a>
+          <% if (auth && auth.scope === "admin") { %>
+            <a class="btn-link" href="/pushups/settings">Settings</a>
+          <% } %>
         </div>
 
         <h2>Scorecard</h2>
@@ -159,27 +163,12 @@
           </div>
         </article>
 
-        <h2>How To Learn From This</h2>
+        <h2>Coach Note (Next 7 Days)</h2>
         <article class="card">
-          <p><strong>Pace:</strong> <%= interpretation.pace.status %> - <%= interpretation.pace.advice %></p>
-          <p><strong>Consistency:</strong> <%= interpretation.consistency.status %> - <%= interpretation.consistency.advice %></p>
-          <p><strong>Risk:</strong> <%= interpretation.risk.status %> - <%= interpretation.risk.advice %></p>
-          <p class="coach">Coach note (next 7 days): <%= coach_note %></p>
-        </article>
-
-        <h2>Pro/Dev High-Performer Rules</h2>
-        <article class="card">
-          <ol class="rules">
-            <% for (const item of pro_dev) { %>
-              <li>
-                <strong><%= item.name %></strong><br/>
-                Why: <%= item.why %><br/>
-                Action: <%= item.action %>
-              </li>
-            <% } %>
-          </ol>
+          <p class="coach"><%= coach_note %></p>
         </article>
       </section>
+      <%- include("../partials/footer") %>
     </main>
     <script>
       (function () {

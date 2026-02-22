@@ -1,10 +1,34 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const { execSync } = require("child_process");
 const pushupsRouter = require("./src/domains/pushups");
+const packageJson = require("./package.json");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+function formatDateLocal(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function resolveBuildId() {
+  if (process.env.BUILD_ID) return String(process.env.BUILD_ID);
+  try {
+    return execSync("git rev-parse --short HEAD", {
+      cwd: __dirname,
+      stdio: ["ignore", "pipe", "ignore"],
+    }).toString("utf8").trim();
+  } catch (_err) {
+    return "dev";
+  }
+}
+
+const APP_VERSION = String(packageJson.version || "0.0.0");
+const BUILD_ID = resolveBuildId();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -54,13 +78,14 @@ function requireApiKey(req, res, next) {
   // - Writes: POST/PUT/PATCH/DELETE must have an ADMIN key
   const method = (req.method || "GET").toUpperCase();
   const isRead = method === "GET" || method === "HEAD" || method === "OPTIONS";
+  const isAdminKey = ADMIN.has(key);
 
   // 📘 Teach-mode: ADMIN should be a superset.
   // If you have an admin key, you can always read.
-  const ok = isRead ? (READONLY.has(key) || ADMIN.has(key)) : ADMIN.has(key);
+  const ok = isRead ? (READONLY.has(key) || isAdminKey) : isAdminKey;
   if (!ok) return res.status(401).send("Unauthorized");
 
-  req.auth = { scope: isRead ? "readonly" : "admin" };
+  req.auth = { scope: isAdminKey ? "admin" : "readonly" };
   return next();
 }
 
@@ -69,6 +94,15 @@ app.get("/health", (req, res) => {
 });
 
 app.use(requireApiKey);
+app.use((req, res, next) => {
+  res.locals.appMeta = {
+    version: APP_VERSION,
+    build: BUILD_ID,
+    date: formatDateLocal(new Date()),
+  };
+  res.locals.auth = req.auth || { scope: "unknown" };
+  next();
+});
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
