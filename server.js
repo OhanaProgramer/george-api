@@ -5,6 +5,7 @@ const { execSync } = require("child_process");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const pushupsRouter = require("./src/domains/pushups");
+const stravaRouter = require("./src/domains/strava");
 const packageJson = require("./package.json");
 
 const app = express();
@@ -183,6 +184,7 @@ app.get("/analytics.json", (req, res) => {
   res.redirect(302, "/pushups/analytics.json");
 });
 
+app.use("/", stravaRouter);
 app.use("/", pushupsRouter);
 
 app.listen(PORT, () => {
