@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const pushupsRouter = require("./src/domains/pushups");
 const stravaRouter = require("./src/domains/strava");
 const healthRouter = require("./src/domains/health");
+const runningCheckRouter = require("./src/domains/runningCheck");
 const packageJson = require("./package.json");
 const { getAppMeta } = require("./src/core/appMeta");
 
@@ -20,6 +21,7 @@ function isAdminSession(req) {
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
   name: "george.sid",
@@ -166,6 +168,7 @@ app.get("/analytics.json", (req, res) => {
 
 app.use("/", stravaRouter);
 app.use("/", healthRouter);
+app.use("/", runningCheckRouter);
 app.use("/", pushupsRouter);
 
 app.listen(PORT, () => {
