@@ -1,0 +1,102 @@
+version: 0.1
+last_updated: 2026-03-06
+
+inherits:
+  policy: life_span_exercise_policy.yaml
+
+domain:
+  name: running
+  unit: moving_time_s
+  source: strava
+  primary_sport_types:
+    - Run
+
+# -----------------------------
+# 1) FIELD MAPPING
+# -----------------------------
+metric_mapping:
+  weekly_volume:
+    current_week: risk.last_7d_moving_time_s
+    prior_week: risk.prior_7d_moving_time_s
+
+  rolling_7_day_average: consistency.avg_7d_moving_time_s
+  rolling_30_day_average: consistency.avg_30d_moving_time_s
+  percent_change_week_over_week: risk.weekly_jump_pct_moving_time
+  active_days_last_30: consistency.active_days_30d
+
+# -----------------------------
+# 2) RUNNING-SPECIFIC SIGNALS
+# -----------------------------
+signals:
+
+  detraining_drop:
+    # Signal A
+    weekly_drop_percent_threshold: -30
+
+  baseline_gap:
+    # Signal B
+    ratio_7d_to_30d_threshold: 0.85
+
+  # -----------------------------
+  # Signals for "hands-off" stable compounding
+  # Uses existing thresholds or inherited guardrails.
+  # -----------------------------
+
+  baseline_ok:
+    # Inverse of baseline_gap using the same threshold (no new numbers).
+    ratio_7d_to_30d_min: 0.85
+
+  wow_within_global_guardrails:
+    # Uses inherited progressive overload bounds (no new numbers here).
+    min_from_inherited: progressive_overload_bounds.minimum
+    max_from_inherited: progressive_overload_bounds.maximum
+
+  frequency_ok:
+    # Uses inherited minimum_frequency_per_week if defined by the running
+    # normalization layer as active running days per week.
+    min_days_per_week_from_inherited: minimum_frequency_per_week
+
+# -----------------------------
+# 3) CLASSIFICATION RULES
+# -----------------------------
+classification_rules:
+
+  detraining_risk:
+    require_minimum_signals: 2
+    confirm_signals:
+      - detraining_drop
+      - baseline_gap
+
+  controlled_growth:
+    # "Green light" state: pattern is working. Maintain current pace.
+    # Requires multiple confirming signals to reduce false positives.
+    controlled_growth:
+    require_minimum_signals: 2
+    confirm_signals:
+      - wow_within_global_guardrails
+      - baseline_ok
+  stable:
+    # Deterministic fallback state when no other classification triggers.
+    # This guarantees a directive is always produced.
+    require_minimum_signals: 0
+    confirm_signals: []
+
+# -----------------------------
+# 4) DIRECTIVE TEMPLATES (DETERMINISTIC)
+# -----------------------------
+directive_templates:
+
+  detraining_risk:
+    status: "Cooling phase detected."
+    primary_fix: "Rebuild baseline: bring 7D average up toward 30D average."
+    constraint: "Avoid rebound spikes; keep week-over-week change within global guardrails."
+
+  controlled_growth:
+    status: "Controlled growth."
+    primary_fix: "Maintain current run pattern. No changes needed."
+    constraint: "Stay within guardrails. Avoid extra volume just to chase the metric."
+
+  stable:
+    status: "Stable."
+    primary_fix: "Continue current pattern. Monitor for drift."
+    constraint: "No escalation unless global review window permits."

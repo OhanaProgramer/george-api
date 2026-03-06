@@ -1,0 +1,22 @@
+{
+  "2026-03-04": {
+    "sleep_hours": {
+      "value": 5,
+      "source": "manual",
+      "saved_at": "2026-03-05T17:04:40.421Z",
+      "locked_until": "2026-03-06T17:04:40.421Z"
+    },
+    "resting_hr": {
+      "value": 54,
+      "source": "manual",
+      "saved_at": "2026-03-05T17:04:40.421Z",
+      "locked_until": "2026-03-06T17:04:40.421Z"
+    },
+    "hrv_ms": {
+      "value": 34,
+      "source": "manual",
+      "saved_at": "2026-03-05T17:04:40.421Z",
+      "locked_until": "2026-03-06T17:04:40.421Z"
+    }
+  }
+}

@@ -4,15 +4,24 @@ const {
   readPublish,
 } = require("./pushups.store");
 const { rebuildPushups } = require("./pushups.rebuild");
+const { getLogHealthModel } = require("../health/health.service");
 
 async function getLogData(overrides = {}) {
-  const { todayCount, lifetimeCount } = await getDashboardCounts();
+  const [{ todayCount, lifetimeCount }, healthModel] = await Promise.all([
+    getDashboardCounts(),
+    getLogHealthModel(),
+  ]);
   return {
     message: "",
     error: "",
     last: "",
+    recoveryMessage: "",
+    recoveryError: "",
+    painMessage: "",
+    painError: "",
     todayCount,
     lifetimeCount,
+    ...healthModel,
     ...overrides,
   };
 }

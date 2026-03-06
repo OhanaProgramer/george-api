@@ -8,6 +8,10 @@ const {
   rebuildPushups,
 } = require("./pushups.service");
 const { readSettings, writeSettings } = require("./pushups.settings");
+const {
+  saveRecoveryYesterday,
+  savePainToday,
+} = require("../health/health.service");
 
 const router = express.Router();
 
@@ -66,6 +70,57 @@ router.post("/pushups/log", async (req, res) => {
     "pushups/log",
     model
   );
+});
+
+router.post("/pushups/log/recovery", async (req, res) => {
+  const payload = {
+    sleep_hours: req.body.sleep_hours,
+    resting_hr: req.body.resting_hr,
+    hrv_ms: req.body.hrv_ms,
+  };
+
+  try {
+    await saveRecoveryYesterday(payload);
+    const model = await getLogData({
+      recoveryMessage: "Recovery (Yesterday) saved.",
+      recoveryError: "",
+    });
+    return res.status(200).render("pushups/log", model);
+  } catch (err) {
+    const isLocked = err && err.code === "LOCKED";
+    const model = await getLogData({
+      recoveryMessage: "",
+      recoveryError: isLocked
+        ? `Recovery is locked until ${err.locked_until}.`
+        : (err && err.message ? err.message : "Unable to save recovery metrics."),
+    });
+    return res.status(isLocked ? 423 : 400).render("pushups/log", model);
+  }
+});
+
+router.post("/pushups/log/pain", async (req, res) => {
+  const payload = {
+    pain_flag: req.body.pain_flag,
+    pain_note: req.body.pain_note,
+  };
+
+  try {
+    await savePainToday(payload);
+    const model = await getLogData({
+      painMessage: "Pain/Injury (Today) saved.",
+      painError: "",
+    });
+    return res.status(200).render("pushups/log", model);
+  } catch (err) {
+    const isLocked = err && err.code === "LOCKED";
+    const model = await getLogData({
+      painMessage: "",
+      painError: isLocked
+        ? `Pain/Injury is locked until ${err.locked_until}.`
+        : (err && err.message ? err.message : "Unable to save pain/injury metrics."),
+    });
+    return res.status(isLocked ? 423 : 400).render("pushups/log", model);
+  }
 });
 
 router.get("/pushups/analytics", async (req, res) => {

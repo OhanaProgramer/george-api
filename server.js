@@ -1,38 +1,18 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const { execSync } = require("child_process");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const pushupsRouter = require("./src/domains/pushups");
 const stravaRouter = require("./src/domains/strava");
+const healthRouter = require("./src/domains/health");
 const packageJson = require("./package.json");
+const { getAppMeta } = require("./src/core/appMeta");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-function formatDateLocal(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function resolveBuildId() {
-  if (process.env.BUILD_ID) return String(process.env.BUILD_ID);
-  try {
-    return execSync("git rev-parse --short HEAD", {
-      cwd: __dirname,
-      stdio: ["ignore", "pipe", "ignore"],
-    }).toString("utf8").trim();
-  } catch (_err) {
-    return "dev";
-  }
-}
-
-const APP_VERSION = String(packageJson.version || "0.0.0");
-const BUILD_ID = resolveBuildId();
-const BUILD_DATE = formatDateLocal(new Date());
+const APP_META = getAppMeta({ repoRoot: __dirname, packageJson });
 
 function isAdminSession(req) {
   return !!(req.session && req.session.isAdmin === true);
@@ -49,7 +29,7 @@ app.use(session({
   cookie: { httpOnly: true, sameSite: "lax" },
 }));
 app.use((req, res, next) => {
-  res.locals.appMeta = { version: APP_VERSION, build: BUILD_ID, date: BUILD_DATE };
+  res.locals.appMeta = APP_META;
   res.locals.auth = req.auth || { scope: "unknown" };
   next();
 });
@@ -185,6 +165,7 @@ app.get("/analytics.json", (req, res) => {
 });
 
 app.use("/", stravaRouter);
+app.use("/", healthRouter);
 app.use("/", pushupsRouter);
 
 app.listen(PORT, () => {

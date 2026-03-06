@@ -1,7 +1,7 @@
 <footer class="app-footer">
   <span>
     v<%= (appMeta && appMeta.version) || "0.0.0" %> •
-    <%= (appMeta && appMeta.build) || "dev" %> •
-    <%= (appMeta && appMeta.date) || "" %>
+    <%= (appMeta && (appMeta.gitSha || appMeta.build)) || "dev" %> •
+    <%= (appMeta && (appMeta.buildDate || appMeta.date)) || "" %>
   </span>
 </footer>
