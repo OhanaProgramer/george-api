@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Running Check</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <strong>Worlds Abound Private</strong>
+        <a href="/pushups/log">Back to log</a>
+      </div>
+
+      <section class="panel">
+        <h1>Running Check</h1>
+        <div class="links">
+          <a class="btn-link" href="/running/check.json">JSON</a>
+        </div>
+        <p class="subtle">Date: <strong><%= date %></strong></p>
+
+        <% if (message) { %>
+          <p class="msg"><%= message %></p>
+        <% } %>
+        <% if (error) { %>
+          <p class="err"><%= error %></p>
+        <% } %>
+
+        <section class="card metric-block">
+          <h2>Running Status</h2>
+          <p><strong>Classification:</strong> <%= running_status && running_status.classification ? running_status.classification : "" %></p>
+          <p><strong>Data Available:</strong> <%= running_status && running_status.data_available ? "Yes" : "No" %></p>
+          <div class="grid">
+            <div>
+              <label>7D Avg (sec/day)</label>
+              <input type="text" value="<%= running_status && running_status.metrics && running_status.metrics.consistency ? running_status.metrics.consistency.avg_7d : '' %>" readonly />
+            </div>
+            <div>
+              <label>30D Avg (sec/day)</label>
+              <input type="text" value="<%= running_status && running_status.metrics && running_status.metrics.consistency ? running_status.metrics.consistency.avg_30d : '' %>" readonly />
+            </div>
+            <div>
+              <label>7D Total (sec)</label>
+              <input type="text" value="<%= running_status && running_status.metrics && running_status.metrics.risk ? running_status.metrics.risk.last_7d_total : '' %>" readonly />
+            </div>
+            <div>
+              <label>WoW Change (%)</label>
+              <input type="text" value="<%= running_status && running_status.metrics && running_status.metrics.risk ? (running_status.metrics.risk.weekly_jump_pct === null ? 'n/a' : running_status.metrics.risk.weekly_jump_pct) : '' %>" readonly />
+            </div>
+          </div>
+        </section>
+
+        <form method="post" action="/running/check/manual">
+          <input type="hidden" name="date" value="<%= date %>" />
+
+          <section class="card metric-block">
+            <h2>Body Input</h2>
+            <div class="grid">
+              <div>
+                <label for="recovery">Recovery</label>
+                <input id="recovery" name="recovery" type="text" maxlength="60" value="<%= body_input && body_input.recovery ? body_input.recovery : '' %>" />
+              </div>
+              <div>
+                <label for="pain">Pain</label>
+                <select id="pain" name="pain">
+                  <option value="false" <%= body_input && !body_input.pain ? "selected" : "" %>>false</option>
+                  <option value="true" <%= body_input && body_input.pain ? "selected" : "" %>>true</option>
+                </select>
+              </div>
+              <div>
+                <label for="injury">Injury</label>
+                <select id="injury" name="injury">
+                  <option value="false" <%= body_input && !body_input.injury ? "selected" : "" %>>false</option>
+                  <option value="true" <%= body_input && body_input.injury ? "selected" : "" %>>true</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="card metric-block">
+            <h2>Yesterday's Choice</h2>
+            <div class="grid">
+              <div>
+                <label for="yesterday_choice">Choice</label>
+                <input id="yesterday_choice" name="yesterday_choice" type="text" maxlength="60" value="<%= yesterday_choice && yesterday_choice.choice ? yesterday_choice.choice : '' %>" />
+              </div>
+              <div>
+                <label for="yesterday_reason">Reason</label>
+                <input id="yesterday_reason" name="yesterday_reason" type="text" maxlength="240" value="<%= yesterday_choice && yesterday_choice.reason ? yesterday_choice.reason : '' %>" />
+              </div>
+            </div>
+          </section>
+
+          <section class="card metric-block">
+            <h2>Recommendation</h2>
+            <p><strong>Code:</strong> <%= recommendation && recommendation.code ? recommendation.code : "" %></p>
+            <p><strong>Status:</strong> <%= recommendation && recommendation.status ? recommendation.status : "" %></p>
+            <p><strong>Primary:</strong> <%= recommendation && recommendation.primary_fix ? recommendation.primary_fix : "" %></p>
+            <p><strong>Constraint:</strong> <%= recommendation && recommendation.constraint ? recommendation.constraint : "" %></p>
+          </section>
+
+          <button type="submit">Save Inputs</button>
+        </form>
+      </section>
+      <%- include("../partials/footer") %>
+    </main>
+  </body>
+</html>
