@@ -16,12 +16,12 @@ domain:
 # -----------------------------
 metric_mapping:
   weekly_volume:
-    current_week: risk.last_7d_moving_time_s
-    prior_week: risk.prior_7d_moving_time_s
+    current_week: risk.last_7d_total
+    prior_week: risk.prior_7d_total
 
-  rolling_7_day_average: consistency.avg_7d_moving_time_s
-  rolling_30_day_average: consistency.avg_30d_moving_time_s
-  percent_change_week_over_week: risk.weekly_jump_pct_moving_time
+  rolling_7_day_average: consistency.avg_7d
+  rolling_30_day_average: consistency.avg_30d
+  percent_change_week_over_week: risk.weekly_jump_pct
   active_days_last_30: consistency.active_days_30d
 
 # -----------------------------
@@ -48,13 +48,8 @@ signals:
 
   wow_within_global_guardrails:
     # Uses inherited progressive overload bounds (no new numbers here).
-    min_from_inherited: progressive_overload_bounds.minimum
-    max_from_inherited: progressive_overload_bounds.maximum
-
-  frequency_ok:
-    # Uses inherited minimum_frequency_per_week if defined by the running
-    # normalization layer as active running days per week.
-    min_days_per_week_from_inherited: minimum_frequency_per_week
+    min_from_inherited: principles.progressive_overload.weekly_change_bounds_percent.minimum
+    max_from_inherited: principles.progressive_overload.weekly_change_bounds_percent.maximum
 
 # -----------------------------
 # 3) CLASSIFICATION RULES
@@ -70,7 +65,6 @@ classification_rules:
   controlled_growth:
     # "Green light" state: pattern is working. Maintain current pace.
     # Requires multiple confirming signals to reduce false positives.
-    controlled_growth:
     require_minimum_signals: 2
     confirm_signals:
       - wow_within_global_guardrails
