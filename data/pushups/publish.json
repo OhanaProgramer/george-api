@@ -1,34 +1,34 @@
 {
-  "as_of": "2026-02-22",
+  "as_of": "2026-03-07",
   "goal": {
     "period_start": "2026-01-01",
     "target_date": "2026-12-22",
     "target_total": 30000,
-    "current_total_2026": 4747,
-    "expected_total_by_today": 4466.29,
-    "ahead_behind": 280.71,
-    "required_per_day_remaining": 83.07,
-    "projected_total_by_target_30d_pace": 36915.5,
+    "current_total_2026": 6133,
+    "expected_total_by_today": 5561.8,
+    "ahead_behind": 571.2,
+    "required_per_day_remaining": 82.02,
+    "projected_total_by_target_30d_pace": 36080.33,
     "on_pace_today": true
   },
   "consistency": {
-    "avg_7d": 77.43,
-    "avg_30d": 106.17,
-    "active_days_30d": 29
+    "avg_7d": 78.43,
+    "avg_30d": 103.27,
+    "active_days_30d": 28
   },
   "risk": {
-    "last_7d_total": 542,
-    "prior_7d_total": 790,
-    "weekly_jump_pct": -31.39,
+    "last_7d_total": 549,
+    "prior_7d_total": 932,
+    "weekly_jump_pct": -41.09,
     "high_ramp_risk": false
   },
   "totals": {
-    "lifetime_all_years": 4807
+    "lifetime_all_years": 6193
   },
   "interpretation": {
     "pace": {
-      "status": "On pace",
-      "advice": "Stay steady. Keep daily output near your 30-day average."
+      "status": "Ahead of pace",
+      "advice": "Protect consistency and avoid overreaching. Bank the lead gradually."
     },
     "consistency": {
       "status": "Cooling",
@@ -43,12 +43,12 @@
     {
       "name": "One Lead Metric",
       "why": "Top performers anchor behavior to a single pace number each day.",
-      "action": "Hit or exceed required pace: 83.07 reps/day."
+      "action": "Hit or exceed required pace: 82.02 reps/day."
     },
     {
       "name": "Consistency Before Intensity",
       "why": "Sustained frequency compounds faster than occasional spikes.",
-      "action": "Target >= 24 active days per 30 days (currently 29)."
+      "action": "Target >= 24 active days per 30 days (currently 28)."
     },
     {
       "name": "Progressive Overload With Guardrails",
@@ -58,58 +58,6 @@
   ],
   "coach_note": "This week: rebuild consistency. Add one extra training day and match your 30-day average.",
   "series_60d": [
-    {
-      "date": "2025-12-25",
-      "total": 0
-    },
-    {
-      "date": "2025-12-26",
-      "total": 0
-    },
-    {
-      "date": "2025-12-27",
-      "total": 0
-    },
-    {
-      "date": "2025-12-28",
-      "total": 0
-    },
-    {
-      "date": "2025-12-29",
-      "total": 0
-    },
-    {
-      "date": "2025-12-30",
-      "total": 0
-    },
-    {
-      "date": "2025-12-31",
-      "total": 0
-    },
-    {
-      "date": "2026-01-01",
-      "total": 90
-    },
-    {
-      "date": "2026-01-02",
-      "total": 90
-    },
-    {
-      "date": "2026-01-03",
-      "total": 90
-    },
-    {
-      "date": "2026-01-04",
-      "total": 80
-    },
-    {
-      "date": "2026-01-05",
-      "total": 60
-    },
-    {
-      "date": "2026-01-06",
-      "total": 60
-    },
     {
       "date": "2026-01-07",
       "total": 60
@@ -296,109 +244,109 @@
     },
     {
       "date": "2026-02-22",
-      "total": 95
+      "total": 208
+    },
+    {
+      "date": "2026-02-23",
+      "total": 166
+    },
+    {
+      "date": "2026-02-24",
+      "total": 119
+    },
+    {
+      "date": "2026-02-25",
+      "total": 107
+    },
+    {
+      "date": "2026-02-26",
+      "total": 157
+    },
+    {
+      "date": "2026-02-27",
+      "total": 77
+    },
+    {
+      "date": "2026-02-28",
+      "total": 98
+    },
+    {
+      "date": "2026-03-01",
+      "total": 0
+    },
+    {
+      "date": "2026-03-02",
+      "total": 146
+    },
+    {
+      "date": "2026-03-03",
+      "total": 86
+    },
+    {
+      "date": "2026-03-04",
+      "total": 92
+    },
+    {
+      "date": "2026-03-05",
+      "total": 45
+    },
+    {
+      "date": "2026-03-06",
+      "total": 89
+    },
+    {
+      "date": "2026-03-07",
+      "total": 91
     }
   ],
   "avg_14d": [
     {
-      "date": "2025-12-25",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-26",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-27",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-28",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-29",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-30",
-      "avg": 0
-    },
-    {
-      "date": "2025-12-31",
-      "avg": 0
-    },
-    {
-      "date": "2026-01-01",
-      "avg": 11.3
-    },
-    {
-      "date": "2026-01-02",
-      "avg": 20
-    },
-    {
-      "date": "2026-01-03",
-      "avg": 27
-    },
-    {
-      "date": "2026-01-04",
-      "avg": 31.8
-    },
-    {
-      "date": "2026-01-05",
-      "avg": 34.2
-    },
-    {
-      "date": "2026-01-06",
-      "avg": 36.2
-    },
-    {
       "date": "2026-01-07",
-      "avg": 37.9
+      "avg": 60
     },
     {
       "date": "2026-01-08",
-      "avg": 42.1
+      "avg": 60
     },
     {
       "date": "2026-01-09",
-      "avg": 46.4
+      "avg": 60
     },
     {
       "date": "2026-01-10",
-      "avg": 50.7
+      "avg": 60
     },
     {
       "date": "2026-01-11",
-      "avg": 55
+      "avg": 60
     },
     {
       "date": "2026-01-12",
-      "avg": 56.4
+      "avg": 53.3
     },
     {
       "date": "2026-01-13",
-      "avg": 61.2
+      "avg": 55.3
     },
     {
       "date": "2026-01-14",
-      "avg": 65.5
+      "avg": 55.9
     },
     {
       "date": "2026-01-15",
-      "avg": 66.2
+      "avg": 60.8
     },
     {
       "date": "2026-01-16",
-      "avg": 64.1
+      "avg": 60.7
     },
     {
       "date": "2026-01-17",
-      "avg": 64.4
+      "avg": 63.8
     },
     {
       "date": "2026-01-18",
-      "avg": 63
+      "avg": 63.5
     },
     {
       "date": "2026-01-19",
@@ -538,17 +486,69 @@
     },
     {
       "date": "2026-02-22",
-      "avg": 95.1
+      "avg": 103.2
+    },
+    {
+      "date": "2026-02-23",
+      "avg": 106.1
+    },
+    {
+      "date": "2026-02-24",
+      "avg": 105
+    },
+    {
+      "date": "2026-02-25",
+      "avg": 101.9
+    },
+    {
+      "date": "2026-02-26",
+      "avg": 103.5
+    },
+    {
+      "date": "2026-02-27",
+      "avg": 105.4
+    },
+    {
+      "date": "2026-02-28",
+      "avg": 103.5
+    },
+    {
+      "date": "2026-03-01",
+      "avg": 98.5
+    },
+    {
+      "date": "2026-03-02",
+      "avg": 103.6
+    },
+    {
+      "date": "2026-03-03",
+      "avg": 109.7
+    },
+    {
+      "date": "2026-03-04",
+      "avg": 114.5
+    },
+    {
+      "date": "2026-03-05",
+      "avg": 112.4
+    },
+    {
+      "date": "2026-03-06",
+      "avg": 109.8
+    },
+    {
+      "date": "2026-03-07",
+      "avg": 105.8
     }
   ],
   "target_daily": 113,
   "flags": {
-    "trend_down": true,
+    "trend_down": false,
     "below_target_projection": true
   },
   "metrics": {
-    "avg_recent_14": 95.1,
-    "avg_prior_14": 117.8
+    "avg_recent_14": 105.8,
+    "avg_prior_14": 97.3
   },
   "settings_summary": {
     "goal_total": 40000,

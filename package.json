@@ -10,6 +10,8 @@
     "import:pushups": "node scripts/import_pushups_events.js",
     "import:pushups:apply": "node scripts/import_pushups_events.js --apply",
     "rebuild:pushups": "node scripts/rebuild_pushups.js",
+    "repair:pushups": "node scripts/clean_pushup_events.js",
+    "test:pushups:rebuild": "node scripts/test_pushups_rebuild.js",
     "smoke": "bash scripts/smoke_test.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
