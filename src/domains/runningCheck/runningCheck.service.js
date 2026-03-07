@@ -79,6 +79,45 @@ function activeDaysRange(dailyByDate, endKey, days) {
   return count;
 }
 
+function buildCrossTrainingSummary(activities, dateKey) {
+  const windowStart = addDaysDateKey(dateKey, -6);
+  const withinWindow = activities.filter((activity) => {
+    const activityKey = parseISODateToDateKey(activity && activity.start_date);
+    return activityKey && activityKey >= windowStart && activityKey <= dateKey;
+  });
+
+  const categories = [
+    { name: "Swimming", sportTypes: new Set(["swim"]) },
+    { name: "Yoga", sportTypes: new Set(["yoga"]) },
+    { name: "Walking", sportTypes: new Set(["walk", "hike"]) },
+    { name: "Cycling", sportTypes: new Set(["ride", "virtualride", "ebikeride"]) },
+  ];
+
+  const items = categories.map((category) => {
+    const matched = withinWindow.filter((activity) =>
+      category.sportTypes.has(String(activity && activity.sport_type || "").toLowerCase()));
+    const sessions = matched.length;
+    const minutes = Math.round(
+      matched.reduce((sum, activity) => sum + (Number(activity && activity.moving_time_s) || 0), 0) / 60
+    );
+    const exists = sessions > 0;
+    const summary = exists ? `${sessions} session${sessions === 1 ? "" : "s"} / ${minutes} min` : "No activity";
+
+    return {
+      name: category.name,
+      exists,
+      sessions,
+      minutes,
+      summary,
+    };
+  });
+
+  return {
+    window_days: 7,
+    items,
+  };
+}
+
 function buildSignalState(metrics) {
   const weeklyJumpPct = metrics.risk.weekly_jump_pct;
   const avg7 = metrics.consistency.avg_7d;
@@ -285,6 +324,23 @@ async function getRunningCheck({ date } = {}) {
 
   // Running status derives from the latest Strava export so this endpoint stays read-only for policy inputs.
   const runningStatus = await getRunningDailyFromStrava(dateKey);
+  let crossTrainingSummary = {
+    window_days: 7,
+    items: [
+      { name: "Swimming", exists: false, sessions: 0, minutes: 0, summary: "No activity" },
+      { name: "Yoga", exists: false, sessions: 0, minutes: 0, summary: "No activity" },
+      { name: "Walking", exists: false, sessions: 0, minutes: 0, summary: "No activity" },
+      { name: "Cycling", exists: false, sessions: 0, minutes: 0, summary: "No activity" },
+    ],
+  };
+  try {
+    const raw = await fs.readFile(latestActivitiesExportPath, "utf8");
+    const exportPayload = JSON.parse(raw);
+    const activities = Array.isArray(exportPayload.activities) ? exportPayload.activities : [];
+    crossTrainingSummary = buildCrossTrainingSummary(activities, dateKey);
+  } catch (_err) {
+    // Keep safe fallback summary when Strava export is missing or unreadable.
+  }
   const recommendation = buildRecommendation({ runningStatus, manualInput });
 
   return {
@@ -299,6 +355,7 @@ async function getRunningCheck({ date } = {}) {
       choice: manualInput.yesterday_choice,
       reason: manualInput.yesterday_reason,
     },
+    cross_training_summary: crossTrainingSummary,
     recommendation,
   };
 }

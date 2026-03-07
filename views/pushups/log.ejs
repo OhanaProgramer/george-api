@@ -8,14 +8,11 @@
   </head>
   <body>
     <main class="shell">
-      <div class="topbar">
-        <strong>Worlds Abound Private</strong>
-      </div>
+      <%- include("../partials/main_nav", { currentPage: "pushups" }) %>
 
       <section class="panel">
         <h1>Pushups Log</h1>
         <div class="links">
-          <a class="btn-link" href="/pushups/analytics">Analytics</a>
           <a class="btn-link" href="/pushups/stats.json">Stats JSON</a>
         </div>
 
@@ -47,104 +44,6 @@
             <button type="submit">Log Session</button>
           </div>
         </form>
-
-        <section class="card metric-block <%= recovery && recovery.locked ? 'is-locked' : '' %>">
-          <h2>Recovery (Yesterday)</h2>
-          <p class="subtle">Date: <strong><%= recovery ? recovery.dateKey : '' %></strong></p>
-          <% if (recoveryMessage) { %>
-            <p class="msg"><%= recoveryMessage %></p>
-          <% } %>
-          <% if (recoveryError) { %>
-            <p class="err"><%= recoveryError %></p>
-          <% } %>
-          <% if (recovery && recovery.locked) { %>
-            <p class="subtle"><strong>Locked</strong> (saved <%= recovery.saved_at || "recently" %>)</p>
-          <% } %>
-          <form method="post" action="/pushups/log/recovery">
-            <div class="grid">
-              <div>
-                <label for="sleep_hours">Sleep (hours)</label>
-                <input
-                  id="sleep_hours"
-                  name="sleep_hours"
-                  type="number"
-                  min="0"
-                  max="14"
-                  step="0.1"
-                  required
-                  value="<%= recovery && recovery.sleep_hours !== '' ? recovery.sleep_hours : '' %>"
-                  <%= recovery && recovery.locked ? 'disabled' : '' %>
-                />
-              </div>
-              <div>
-                <label for="resting_hr">Resting HR (bpm)</label>
-                <input
-                  id="resting_hr"
-                  name="resting_hr"
-                  type="number"
-                  min="30"
-                  max="120"
-                  step="1"
-                  required
-                  value="<%= recovery && recovery.resting_hr !== '' ? recovery.resting_hr : '' %>"
-                  <%= recovery && recovery.locked ? 'disabled' : '' %>
-                />
-              </div>
-              <div>
-                <label for="hrv_ms">HRV (ms)</label>
-                <input
-                  id="hrv_ms"
-                  name="hrv_ms"
-                  type="number"
-                  min="5"
-                  max="300"
-                  step="1"
-                  required
-                  value="<%= recovery && recovery.hrv_ms !== '' ? recovery.hrv_ms : '' %>"
-                  <%= recovery && recovery.locked ? 'disabled' : '' %>
-                />
-              </div>
-            </div>
-            <button type="submit" <%= recovery && recovery.locked ? 'disabled' : '' %>>Save Recovery</button>
-          </form>
-        </section>
-
-        <section class="card metric-block <%= pain && pain.locked ? 'is-locked' : '' %>">
-          <h2>Pain/Injury (Today)</h2>
-          <p class="subtle">Date: <strong><%= pain ? pain.dateKey : '' %></strong></p>
-          <% if (painMessage) { %>
-            <p class="msg"><%= painMessage %></p>
-          <% } %>
-          <% if (painError) { %>
-            <p class="err"><%= painError %></p>
-          <% } %>
-          <% if (pain && pain.locked) { %>
-            <p class="subtle"><strong>Locked</strong> (saved <%= pain.saved_at || "recently" %>)</p>
-          <% } %>
-          <form method="post" action="/pushups/log/pain">
-            <div class="grid">
-              <div>
-                <label for="pain_flag">Pain flag</label>
-                <select id="pain_flag" name="pain_flag" <%= pain && pain.locked ? 'disabled' : '' %>>
-                  <option value="false" <%= pain && !pain.pain_flag ? 'selected' : '' %>>No</option>
-                  <option value="true" <%= pain && pain.pain_flag ? 'selected' : '' %>>Yes</option>
-                </select>
-              </div>
-              <div>
-                <label for="pain_note">Pain note (optional)</label>
-                <input
-                  id="pain_note"
-                  name="pain_note"
-                  type="text"
-                  maxlength="80"
-                  value="<%= pain ? pain.pain_note : '' %>"
-                  <%= pain && pain.locked ? 'disabled' : '' %>
-                />
-              </div>
-            </div>
-            <button type="submit" <%= pain && pain.locked ? 'disabled' : '' %>>Save Pain/Injury</button>
-          </form>
-        </section>
       </section>
       <%- include("../partials/footer") %>
     </main>

@@ -75,13 +75,11 @@
       const avgPrior14 = Number.isFinite(Number(publishMetrics.avg_prior_14)) ? Number(publishMetrics.avg_prior_14) : null;
     %>
     <main class="shell">
-      <div class="topbar">
-        <a href="/pushups/log">Back to log</a>
-        <span class="subtle">As of <strong><%= as_of %></strong></span>
-      </div>
+      <%- include("../partials/main_nav", { currentPage: "pushupsAnalytics" }) %>
 
       <section class="panel">
         <h1>Pushups Analytics</h1>
+        <p class="subtle">As of <strong><%= as_of %></strong></p>
         <div class="links">
           <a class="btn-link" href="/pushups/support">Support / How this works</a>
           <a class="btn-link" href="/pushups/analytics.json">Analytics JSON</a>

@@ -7,6 +7,7 @@ const pushupsRouter = require("./src/domains/pushups");
 const stravaRouter = require("./src/domains/strava");
 const healthRouter = require("./src/domains/health");
 const runningCheckRouter = require("./src/domains/runningCheck");
+const homeRouter = require("./src/domains/home");
 const packageJson = require("./package.json");
 const { getAppMeta } = require("./src/core/appMeta");
 
@@ -146,10 +147,6 @@ app.post("/logout", (req, res) => {
 app.use(requireApiKey);
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-app.get("/", (req, res) => {
-  res.redirect(302, "/pushups/log");
-});
-
 app.get("/log", (req, res) => {
   res.redirect(302, "/pushups/log");
 });
@@ -166,6 +163,7 @@ app.get("/analytics.json", (req, res) => {
   res.redirect(302, "/pushups/analytics.json");
 });
 
+app.use("/", homeRouter);
 app.use("/", stravaRouter);
 app.use("/", healthRouter);
 app.use("/", runningCheckRouter);

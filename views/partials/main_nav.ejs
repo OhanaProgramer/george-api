@@ -1,0 +1,18 @@
+<%
+  const page = typeof currentPage === "string" ? currentPage : "";
+  const navItems = [
+    { key: "home", label: "Home", href: "/" },
+    { key: "pushups", label: "Pushups", href: "/pushups/log" },
+    { key: "running", label: "Running", href: "/running/check" },
+    { key: "pushupsAnalytics", label: "Pushups Analytics", href: "/pushups/analytics" },
+    { key: "runningAnalytics", label: "Running Analytics", href: "/running/analytics" },
+  ];
+%>
+<div class="topbar nav-shell">
+  <strong>Worlds Abound Private</strong>
+  <div class="links nav-links">
+    <% for (const item of navItems) { %>
+      <a class="btn-link <%= page === item.key ? 'active' : '' %>" href="<%= item.href %>"><%= item.label %></a>
+    <% } %>
+  </div>
+</div>

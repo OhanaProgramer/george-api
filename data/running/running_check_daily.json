@@ -1,12 +1,12 @@
 {
   "2026-03-06": {
     "manual_input": {
-      "recovery": "ok",
+      "recovery": "good",
       "pain": false,
       "injury": false,
-      "yesterday_choice": "easy_run",
-      "yesterday_reason": "kept effort low"
+      "yesterday_choice": "normal_run",
+      "yesterday_reason": "routine"
     },
-    "updated_at": "2026-03-06T17:37:05.029Z"
+    "updated_at": "2026-03-06T18:10:48.913Z"
   }
 }

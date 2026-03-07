@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Home</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <%- include("../partials/main_nav", { currentPage: "home" }) %>
+
+      <section class="panel">
+        <h1>Daily Home</h1>
+        <p class="subtle">Date: <strong><%= date || "-" %></strong></p>
+
+        <section class="card metric-block">
+          <h2>Pushups Summary</h2>
+          <p><strong>Today:</strong> <%= pushups.today_count %></p>
+          <p><strong>Lifetime:</strong> <%= pushups.lifetime_count %></p>
+        </section>
+
+        <section class="card metric-block">
+          <h2>Running Summary</h2>
+          <p><strong>Classification:</strong> <%= running.classification %></p>
+          <p><strong>Recommendation:</strong> <%= running.recommendation_code %></p>
+          <p><strong>Data Available:</strong> <%= running.data_available %></p>
+        </section>
+
+        <section class="card metric-block">
+          <h2>Recovery / Body Summary</h2>
+          <p><strong>Recovery:</strong> <%= running.recovery %></p>
+          <p><strong>Pain:</strong> <%= running.pain %></p>
+          <p><strong>Injury:</strong> <%= running.injury %></p>
+          <p class="subtle">Health recovery date: <%= body.recovery_date %> | Pain date: <%= body.pain_date %></p>
+        </section>
+      </section>
+      <%- include("../partials/footer") %>
+    </main>
+  </body>
+</html>

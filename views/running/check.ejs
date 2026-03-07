@@ -8,10 +8,7 @@
   </head>
   <body>
     <main class="shell">
-      <div class="topbar">
-        <strong>Worlds Abound Private</strong>
-        <a href="/pushups/log">Back to log</a>
-      </div>
+      <%- include("../partials/main_nav", { currentPage: "running" }) %>
 
       <section class="panel">
         <h1>Running Check</h1>
@@ -75,6 +72,19 @@
                   <option value="true" <%= body_input && body_input.injury ? "selected" : "" %>>true</option>
                 </select>
               </div>
+            </div>
+          </section>
+
+          <section class="card metric-block">
+            <h2>Cross-Training Summary (Last 7 Days)</h2>
+            <div class="grid">
+              <% for (const item of (cross_training_summary && cross_training_summary.items) || []) { %>
+                <article class="card">
+                  <p><strong><%= item.name %></strong></p>
+                  <p><strong>Activity:</strong> <%= item.exists ? "Yes" : "No" %></p>
+                  <p class="subtle"><%= item.summary %></p>
+                </article>
+              <% } %>
             </div>
           </section>
 

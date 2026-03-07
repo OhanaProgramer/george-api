@@ -126,16 +126,34 @@ p {
   display: inline-block;
   text-decoration: none;
   border-radius: 999px;
-  border: 1px solid #c9d8ea;
-  background: #f5faff;
-  color: #173153;
+  border: 1px solid #c5ced8;
+  background: #eef1f4;
+  color: #1f2937;
   font-weight: 700;
   padding: 0.55rem 0.95rem;
   min-height: 42px;
 }
 
+.topbar .btn-link {
+  color: #374151;
+}
+
 .btn-link:hover {
-  background: #e9f4ff;
+  background: #e3e8ee;
+}
+
+.btn-link.active {
+  background: #173153;
+  border-color: #173153;
+  color: #f4f9ff;
+}
+
+.nav-shell {
+  align-items: flex-start;
+}
+
+.nav-links {
+  margin-bottom: 0;
 }
 
 .form-grid {

@@ -33,6 +33,10 @@ router.get("/running/check", async (req, res) => {
   }
 });
 
+router.get("/running/analytics", async (_req, res) => {
+  return res.status(200).render("running/analytics");
+});
+
 // Read-only payload for the running check page composition.
 router.get("/running/check.json", async (req, res) => {
   try {
