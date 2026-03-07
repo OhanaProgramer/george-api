@@ -3,15 +3,6 @@ node_modules/
 npm-debug.log*
 .DS_Store
 
-# Runtime data
-data/**/*.json
-data/**/node_modules/
-!data/.gitkeep
-node_modules/
-.env
-npm-debug.log*
-.DS_Store
-
 # Runtime data under data/
 data/**/*.json
 data/**/node_modules/
