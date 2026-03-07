@@ -3,7 +3,19 @@ node_modules/
 npm-debug.log*
 .DS_Store
 
-# Runtime data (legacy + canonical pipeline)
-data/*.json
-data/pushups/*.json
+# Runtime data
+data/**/*.json
+data/**/node_modules/
 !data/.gitkeep
+node_modules/
+.env
+npm-debug.log*
+.DS_Store
+
+# Runtime data under data/
+data/**/*.json
+data/**/node_modules/
+
+# Keep placeholder files only
+!data/.gitkeep
+!data/**/.gitkeep
