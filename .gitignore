@@ -3,10 +3,30 @@ node_modules/
 npm-debug.log*
 .DS_Store
 
-# Runtime data under data/
-data/**/*.json
-data/**/node_modules/
+# =========================
+# DATA: ignore by default
+# =========================
+data/**
 
-# Keep placeholder files only
-!data/.gitkeep
-!data/**/.gitkeep
+# keep directories visible to git
+!data/
+!data/**/
+
+# =========================
+# ALLOWLIST: canonical deploy data only
+# =========================
+!data/pushups/
+!data/pushups/events.ndjson
+
+# optional: if server really needs a specific seed/source file
+# !data/health/strava_activities_historical_2026-01-01.json
+
+# =========================
+# NEVER COMMIT backups/raw dumps
+# =========================
+data/pushups/backups/**
+data/exports/**
+data/cache/**
+data/tmp/**
+data/secrets/**
+*.env
