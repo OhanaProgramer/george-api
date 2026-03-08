@@ -12,6 +12,7 @@
     "rebuild:pushups": "node scripts/rebuild_pushups.js",
     "repair:pushups": "node scripts/clean_pushup_events.js",
     "test:pushups:rebuild": "node scripts/test_pushups_rebuild.js",
+    "backfill:health:strava": "node src/domains/health/backfill_strava_histortical.js",
     "smoke": "bash scripts/smoke_test.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

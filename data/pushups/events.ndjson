@@ -249,3 +249,4 @@
 {"schema":1,"id":"evt_backfill_20260307T120000Z_39","ts":"2026-03-07T12:00:00.000Z","tz":"America/New_York","type":"pushups.set","reps":49,"source":"manual","tags":[],"note":"backfill"}
 {"schema":1,"id":"evt_20260307T120000Z_final27","ts":"2026-03-07T12:00:00.000Z","tz":"America/New_York","type":"pushups.set","reps":27,"source":"manual","tags":[],"note":"final correction set"}
 {"schema":1,"id":"evt_backfill_20260307T130000Z_40","ts":"2026-03-07T13:00:00.000Z","tz":"America/New_York","type":"pushups.set","reps":15,"source":"manual","tags":[],"note":"backfill"}
+{"schema":1,"id":"evt_20260308T131639767Z_1772975799767","ts":"2026-03-08T13:16:39.767Z","tz":"America/New_York","type":"pushups.set","reps":27,"source":"server","tags":[],"note":""}

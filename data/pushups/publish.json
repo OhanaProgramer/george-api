@@ -1,29 +1,29 @@
 {
-  "as_of": "2026-03-07",
+  "as_of": "2026-03-08",
   "goal": {
     "period_start": "2026-01-01",
     "target_date": "2026-12-22",
     "target_total": 30000,
-    "current_total_2026": 6133,
-    "expected_total_by_today": 5561.8,
-    "ahead_behind": 571.2,
-    "required_per_day_remaining": 82.02,
-    "projected_total_by_target_30d_pace": 36080.33,
+    "current_total_2026": 6160,
+    "expected_total_by_today": 5646.07,
+    "ahead_behind": 513.93,
+    "required_per_day_remaining": 82.21,
+    "projected_total_by_target_30d_pace": 34626.5,
     "on_pace_today": true
   },
   "consistency": {
-    "avg_7d": 78.43,
-    "avg_30d": 103.27,
+    "avg_7d": 82.29,
+    "avg_30d": 98.5,
     "active_days_30d": 28
   },
   "risk": {
-    "last_7d_total": 549,
-    "prior_7d_total": 932,
-    "weekly_jump_pct": -41.09,
+    "last_7d_total": 576,
+    "prior_7d_total": 724,
+    "weekly_jump_pct": -20.44,
     "high_ramp_risk": false
   },
   "totals": {
-    "lifetime_all_years": 6193
+    "lifetime_all_years": 6220
   },
   "interpretation": {
     "pace": {
@@ -43,7 +43,7 @@
     {
       "name": "One Lead Metric",
       "why": "Top performers anchor behavior to a single pace number each day.",
-      "action": "Hit or exceed required pace: 82.02 reps/day."
+      "action": "Hit or exceed required pace: 82.21 reps/day."
     },
     {
       "name": "Consistency Before Intensity",
@@ -58,10 +58,6 @@
   ],
   "coach_note": "This week: rebuild consistency. Add one extra training day and match your 30-day average.",
   "series_60d": [
-    {
-      "date": "2026-01-07",
-      "total": 60
-    },
     {
       "date": "2026-01-08",
       "total": 60
@@ -297,13 +293,13 @@
     {
       "date": "2026-03-07",
       "total": 91
+    },
+    {
+      "date": "2026-03-08",
+      "total": 27
     }
   ],
   "avg_14d": [
-    {
-      "date": "2026-01-07",
-      "avg": 60
-    },
     {
       "date": "2026-01-08",
       "avg": 60
@@ -322,39 +318,39 @@
     },
     {
       "date": "2026-01-12",
-      "avg": 53.3
+      "avg": 52
     },
     {
       "date": "2026-01-13",
-      "avg": 55.3
+      "avg": 54.5
     },
     {
       "date": "2026-01-14",
-      "avg": 55.9
+      "avg": 55.3
     },
     {
       "date": "2026-01-15",
-      "avg": 60.8
+      "avg": 60.9
     },
     {
       "date": "2026-01-16",
-      "avg": 60.7
+      "avg": 60.8
     },
     {
       "date": "2026-01-17",
-      "avg": 63.8
+      "avg": 64.2
     },
     {
       "date": "2026-01-18",
-      "avg": 63.5
+      "avg": 63.8
     },
     {
       "date": "2026-01-19",
-      "avg": 60.5
+      "avg": 60.6
     },
     {
       "date": "2026-01-20",
-      "avg": 59.1
+      "avg": 59
     },
     {
       "date": "2026-01-21",
@@ -539,6 +535,10 @@
     {
       "date": "2026-03-07",
       "avg": 105.8
+    },
+    {
+      "date": "2026-03-08",
+      "avg": 92.9
     }
   ],
   "target_daily": 113,
@@ -547,8 +547,8 @@
     "below_target_projection": true
   },
   "metrics": {
-    "avg_recent_14": 105.8,
-    "avg_prior_14": 97.3
+    "avg_recent_14": 92.9,
+    "avg_prior_14": 103.2
   },
   "settings_summary": {
     "goal_total": 40000,
